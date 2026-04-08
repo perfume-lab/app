@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfume Diagnosis - 香水診断</title>
+    <title>香水診断 - Perfume Diagnosis</title>
     <style>
-        /* 全体の設定：上質なグレーとベージュのグラデーション */
+        /* 背景：柔らかいシャンパンベージュのグラデーション */
         body { 
-            font-family: 'Times New Roman', "Yu Mincho", "MS Mincho", serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
-            color: #2c3e50; 
+            font-family: "Yu Mincho", "MS Mincho", serif; 
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%); 
+            color: #333; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -17,93 +17,92 @@
             margin: 0; 
         }
 
-        /* コンテナ：ミニマルな高級感を演出 */
+        /* コンテナ：高級感のあるカードデザイン */
         #app-container { 
-            background: white; 
+            background: rgba(255, 255, 255, 0.9); 
             padding: 3rem 2rem; 
-            border-radius: 2px; /* あえて角を丸くせずシャープに */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.05); 
+            border-radius: 4px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
             width: 90%; 
             max-width: 450px; 
             text-align: center;
-            border-top: 4px solid #c5a059; /* 上部にゴールドのアクセント */
+            border-top: 3px solid #c5a059;
         }
 
-        /* 進捗バー：細く繊細に */
-        .progress-bar { height: 2px; background: #eee; margin-bottom: 3rem; }
+        /* 進捗バー */
+        .progress-bar { height: 2px; background: #eee; margin-bottom: 2.5rem; }
         .progress-fill { height: 100%; background: #c5a059; width: 0%; transition: width 0.5s; }
 
         .question-step { display: none; }
-        .active { display: block; animation: fadeIn 0.8s; }
+        .active { display: block; animation: fadeIn 0.6s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { font-size: 1.2rem; font-weight: normal; letter-spacing: 0.1em; margin-bottom: 2rem; color: #1a1a1a; }
 
-        h2 { font-size: 1.1rem; font-weight: normal; letter-spacing: 0.15em; margin-bottom: 2rem; color: #1a1a1a; }
-
-        /* ボタン：モードブランドのようなタイポグラフィ */
-        .options { display: grid; gap: 15px; }
+        /* ボタン：日本語で見やすく、かつ上品に */
+        .options { display: grid; gap: 12px; }
         .opt-btn { 
-            padding: 15px; 
-            border: 1px solid #d1d1d1; 
+            padding: 14px; 
+            border: 1px solid #dcdcdc; 
             border-radius: 0; 
             cursor: pointer; 
             transition: all 0.3s; 
             background: white; 
             font-family: inherit;
-            letter-spacing: 0.1em;
-            font-size: 0.85rem;
-            color: #555;
+            font-size: 0.9rem;
+            color: #444;
         }
-        .opt-btn:hover { border-color: #c5a059; background: #fafafa; color: #c5a059; }
+        .opt-btn:hover { border-color: #c5a059; background: #fdfaf5; color: #c5a059; }
         .opt-btn.selected { background: #c5a059; color: white; border-color: #c5a059; }
 
-        /* 結果画面：ギャラリーのようなレイアウト */
+        /* 結果画面 */
         #result-area { display: none; text-align: left; }
-        #result-area h3 { font-weight: normal; text-align: center; letter-spacing: 0.2em; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem; }
+        #result-area h3 { font-weight: normal; text-align: center; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1.5rem; }
         
-        .perfume-card { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f0f0f0; }
-        .match-score { color: #c5a059; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 5px; }
-        .perfume-name { font-size: 1.2rem; font-weight: bold; display: block; margin-bottom: 8px; color: #111; }
+        .perfume-card { margin-bottom: 2rem; padding: 1rem; background: #fff; border: 1px solid #f0f0f0; }
         
-        .tag { display: inline-block; border: 1px solid #ddd; padding: 2px 10px; font-size: 0.7rem; margin-right: 5px; color: #888; text-transform: uppercase; }
+        /* 復活したマッチングバー */
+        .match-label { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px; color: #c5a059; font-weight: bold; }
+        .match-bar-bg { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+        .match-bar-fill { height: 100%; background: #c5a059; transition: width 1s ease-out; }
+
+        .perfume-name { font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 8px; color: #111; }
+        .tag { display: inline-block; background: #f8f8f8; border: 1px solid #eee; padding: 2px 8px; font-size: 0.7rem; margin-right: 5px; color: #777; }
         .desc { font-size: 0.85rem; color: #666; margin-top: 10px; line-height: 1.6; }
 
         button#restart { 
-            margin-top: 2rem; width: 100%; padding: 12px; background: #1a1a1a; color: white; 
-            border: none; cursor: pointer; letter-spacing: 0.2em; font-size: 0.8rem; transition: opacity 0.3s;
+            margin-top: 1.5rem; width: 100%; padding: 12px; background: #333; color: white; 
+            border: none; cursor: pointer; letter-spacing: 0.1em; font-size: 0.85rem;
         }
-        button#restart:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
     <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
-    
     <div id="questions"></div>
-
     <div id="result-area">
-        <h3>DIAGNOSIS RESULT</h3>
+        <h3>診断結果</h3>
         <div id="perfume-list"></div>
-        <button id="restart" onclick="restart()">RETRIAL</button>
+        <button id="restart" onclick="restart()">もう一度診断する</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "SCENE", opts: ["OFFICE", "ROMANTIC", "CASUAL", "PARTY"], vals: [1, 5, 3, 4] },
-        { q: "INTENSITY", opts: ["SOFT", "MODERATE", "NOTICEABLE", "STRONG"], vals: [1, 3, 4, 5] },
-        { q: "SWEETNESS", opts: ["FRESH", "NEUTRAL", "SWEET"], vals: [1, 3, 5] },
-        { q: "MOOD", opts: ["BRIGHT", "NEUTRAL", "CALM"], vals: [1, 3, 5] },
-        { q: "MATURITY", opts: ["YOUTHFUL", "NEUTRAL", "MATURE"], vals: [1, 3, 5] }
+        { q: "どのようなシーンで使いたいですか？", opts: ["仕事・オフィス", "デート・特別な日", "日常・普段使い", "夜・パーティー"], vals: [1, 5, 3, 4] },
+        { q: "香りの強さの好みは？", opts: ["さりげなく", "ふんわりと", "しっかり香る", "存在感を出したい"], vals: [1, 3, 4, 5] },
+        { q: "甘さはどのくらい必要ですか？", opts: ["さっぱり・爽やか", "甘すぎず自然", "甘めが好き"], vals: [1, 3, 5] },
+        { q: "周囲に与えたい印象は？", opts: ["明るく華やか", "どちらでも", "落ち着いた・知的"], vals: [1, 3, 5] },
+        { q: "仕上がりの雰囲気は？", opts: ["フレッシュ・若々しい", "どちらでも", "気品ある大人っぽさ"], vals: [1, 3, 5] }
     ];
 
     const perfumes = [
-        { name: "Dior Sauvage", tags: ["Wild", "Sexy"], scores: [3, 5, 2, 2, 4], desc: "野性的で都会的な、力強い男性像を演出します。" },
-        { name: "LV Imagination", tags: ["Tea", "Elegant"], scores: [5, 3, 3, 1, 5], desc: "最高級のシトラスティー。清潔感と高級感が共存します。" },
-        { name: "Creed Aventus", tags: ["Success", "Fruity"], scores: [5, 4, 2, 1, 5], desc: "圧倒的な自信。パイナップルと燻したような深み。" },
-        { name: "Jo Malone English Pear", tags: ["Classic", "Fresh"], scores: [3, 2, 3, 1, 3], desc: "誰からも愛される洋梨とフリージアの香り。" },
-        { name: "Orpheon", tags: ["Mysterious", "Powdery"], scores: [2, 3, 4, 5, 4], desc: "伝説のバーの記憶。石鹸とタバコの煙のような深み。" }
+        { name: "ディオール ソヴァージュ", tags: ["ワイルド", "セクシー"], scores: [3, 5, 2, 2, 4], desc: "野性的で都会的な、力強い男性像を演出します。" },
+        { name: "ルイ・ヴィトン イマジナシオン", tags: ["シトラスティー", "気品"], scores: [5, 3, 3, 1, 5], desc: "最高級の紅茶のような香り。清潔感と高級感が共存します。" },
+        { name: "クリード アバントゥス", tags: ["王者", "フルーティー"], scores: [5, 4, 2, 1, 5], desc: "圧倒的な自信。パイナップルの爽やかさと深み。" },
+        { name: "ジョーマローン イングリッシュペアー", tags: ["定番", "爽やか"], scores: [3, 2, 3, 1, 3], desc: "誰からも愛される洋梨とフリージアの香り。" },
+        { name: "ディプティック オルフェオン", tags: ["ミステリアス", "パウダリー"], scores: [2, 3, 4, 5, 4], desc: "伝説のバーの記憶。石鹸と温かみのある深み。" }
     ];
 
     let currentStep = 0;
@@ -125,10 +124,6 @@
 
     function answer(stepIdx, val) {
         userAnswers[stepIdx] = val;
-        const btns = document.querySelectorAll(`#step-${stepIdx} .opt-btn`);
-        btns.forEach(b => b.classList.remove('selected'));
-        event.target.classList.add('selected');
-
         setTimeout(() => {
             document.getElementById(`step-${stepIdx}`).classList.remove('active');
             if (stepIdx + 1 < questions.length) {
@@ -138,11 +133,11 @@
             } else {
                 showResult();
             }
-        }, 400);
+        }, 300);
     }
 
     function updateProgress() {
-        const percent = (currentStep / questions.length) * 100;
+        const percent = (currentStep / (questions.length - 1)) * 100;
         document.getElementById("progress").style.width = percent + "%";
     }
 
@@ -162,7 +157,8 @@
         results.slice(0, 3).forEach(r => {
             list.innerHTML += `
                 <div class="perfume-card">
-                    <div class="match-score">MATCHING ${r.match}%</div>
+                    <div class="match-label"><span>マッチ度</span><span>${r.match}%</span></div>
+                    <div class="match-bar-bg"><div class="match-bar-fill" style="width: ${r.match}%"></div></div>
                     <span class="perfume-name">${r.name}</span>
                     ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
                     <div class="desc">${r.desc}</div>
