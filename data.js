@@ -12,16 +12,15 @@ const masterPerfumes = [
     // --- 新規追加（CSVデータより抽出） ---
     { id: 8, name: 'Aesop タシット', img: 'images/aesop-tacit-min-2.png', type: 'clean', style: 'minimal', quote: '森林の中で深呼吸するような、バジルの爽やかさ。' },
     { id: 9, name: 'Le Labo ガイアック10', img: 'images/gaiac-10-min.png', type: 'luxury', style: 'minimal', quote: 'ウッドとムスクが溶け合う、至高の日常着。' },
-    // data.js の一部
-{ 
+   { 
     id: 10, 
     name: 'エルメス ナイルの庭', 
     img: 'images/un-jardin-sur-le-nil-min.png',
     type: 'clean', 
     style: 'minimal',
-    quote: 'グレープフルーツが弾ける、水辺の清涼感。',
-    coloria_url: 'https://...', // カラリアのリンク
-    review_url: 'nile.html'    // ★ここ！GitHubに作ったHTMLファイル名を入れる
+    quote: 'グレープフルーツが弾ける、水辺の静寂を纏う香り。',
+    coloria_url: '<a href="//af.moshimo.com/af/c/click?a_id=5473106&p_id=2256&pc_id=4820&pl_id=29950" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" attributionsrc><img src="//image.moshimo.com/af-img/1708/000000029950.jpg" width="320" height="100" style="border:none;"></a><img src="//i.moshimo.com/af/i/impression?a_id=5473106&p_id=2256&pc_id=4820&pl_id=29950" width="1" height="1" style="border:none;" loading="lazy">', // もしものリンク
+    review_url: 'nile.html'  // ← ここをファイル名と一致させる
 },
     { id: 11, name: 'Byredo ブランシュ', img: 'images/blanche-1.jpg', type: 'clean', style: 'minimal', quote: '洗いたての洗濯物のような、純粋な清潔感。' },
     { id: 12, name: 'Le Labo アナザー13', img: 'images/another-13-min.png', type: 'luxury', style: 'art', quote: '都会的で中毒性のある、硬質でクールな刺激。' },
