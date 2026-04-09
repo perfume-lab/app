@@ -5,40 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>深層心理・香水瓶占い</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0d0d0d; }
-        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; line-height: 1.8; }
-        .container { max-width: 500px; margin: auto; }
-        .bottle-option { background: #1a1a1a; border: 1px solid #333; padding: 20px; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
-        .bottle-option:hover { border-color: var(--accent); }
-        .bottle-option img { width: 100%; height: 200px; object-fit: contain; }
-        .btn-q { display: block; width: 100%; padding: 20px; margin: 10px 0; background: #1a1a1a; color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; }
-        .btn-q:hover { border-color: var(--accent); }
-        #result-screen { display: none; padding-top: 30px; border-top: 1px solid var(--accent); }
-        .res-img { width: 220px; margin-bottom: 20px; }
+        :root { --accent: #d4af37; --bg: #050505; --card: #151515; }
+        body, html { height: 100%; margin: 0; font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; overflow-x: hidden; }
+        .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        
+        /* 各セクションをカード風に中央固定 */
+        .card { width: 100%; max-width: 500px; display: none; text-align: center; animation: fadeIn 0.8s; }
+        .active { display: block; }
+
+        h2 { font-size: 1.3rem; margin-bottom: 30px; letter-spacing: 0.1em; line-height: 1.5; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .option { background: var(--card); border: 1px solid #333; padding: 15px; cursor: pointer; transition: 0.3s; border-radius: 4px; }
+        .option:hover { border-color: var(--accent); }
+        .option img { width: 100%; height: 160px; object-fit: contain; }
+        
+        .btn-q { display: block; width: 100%; padding: 18px; margin: 10px 0; background: var(--card); color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; font-size: 0.95rem; }
+        .btn-q:hover { border-color: var(--accent); background: #222; }
+
+        /* 結果画面のデザイン */
+        .res-img { width: 180px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
+        .review-box { background: #111; padding: 20px; border-left: 2px solid var(--accent); text-align: left; font-size: 0.85rem; margin: 20px 0; }
+        .main-btn { display: block; background: var(--accent); color: #000; padding: 16px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        .reset-link { color: #666; text-decoration: none; font-size: 0.8rem; margin-top: 30px; display: inline-block; border-bottom: 1px solid #333; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="step1">
-        <p style="color:var(--accent); letter-spacing:0.2em;">VISUAL CHOICE</p>
-        <h2>直感で、あなたの「空間」に置きたいボトルは？</h2>
-        <div id="bottle-list"></div>
+    <div id="step1" class="card active">
+        <p style="color:var(--accent); letter-spacing:0.3em; font-size:0.7rem;">STAGE 01</p>
+        <h2>あなたの「美意識」が惹かれる<br>ボトルの造形は？</h2>
+        <div class="grid" id="bottle-list"></div>
     </div>
 
-    <div id="step2" style="display:none;">
-        <p style="color:var(--accent); letter-spacing:0.2em;">INNER NEED</p>
-        <h2>今のあなたが、心から求めている「空気」は？</h2>
-        <button class="btn-q" onclick="finish(1)">A. 誰にも邪魔されない、穏やかな安らぎ</button>
-        <button class="btn-q" onclick="finish(2)">B. 周囲を圧倒する、揺るぎない自信</button>
-        <button class="btn-q" onclick="finish(3)">C. 都会的で洗練された、鋭い感性</button>
+    <div id="step2" class="card">
+        <p style="color:var(--accent); font-size:0.7rem;">STAGE 02</p>
+        <h2>今、無意識に選んでいる<br>「色のイメージ」は？</h2>
+        <button class="btn-q" onclick="next('step2', 'step3', 'calm')">深く静かなネイビー（安らぎ）</button>
+        <button class="btn-q" onclick="next('step2', 'step3', 'active')">生命力あふれるオレンジ（自信）</button>
+        <button class="btn-q" onclick="next('step2', 'step3', 'sharp')">無機質で洗練されたシルバー（知性）</button>
     </div>
 
-    <div id="result-screen">
-        <p style="color:var(--accent); font-size: 0.8rem;">THE TRUE MATCH</p>
+    <div id="step3" class="card">
+        <p style="color:var(--accent); font-size:0.7rem;">STAGE 03</p>
+        <h2>最も大切な人に、<br>どう思われたいですか？</h2>
+        <button class="btn-q" onclick="finish('calm')">「一緒にいて落ち着く人」</button>
+        <button class="btn-q" onclick="finish('active')">「いつも頼りになる強い人」</button>
+        <button class="btn-q" onclick="finish('sharp')">「センスが良くて知的な人」</button>
+    </div>
+
+    <div id="result-screen" class="card">
+        <p style="color:var(--accent); font-size:0.7rem; letter-spacing:0.3em;">THE RESULT</p>
         <div id="res-content"></div>
-        <a href="#" id="res-link" target="_blank" style="display:inline-block; background:var(--accent); color:#000; padding:15px 40px; text-decoration:none; font-weight:bold; margin-top:20px;">この香りを手に入れる</a>
-        <p><a href="javascript:location.reload()" style="color:#555; text-decoration:none; font-size:0.7rem; display:block; margin-top:30px;">もう一度占う</a></p>
+        <a href="#" id="res-link" target="_blank" class="main-btn">Celesでこの香水を試す</a>
+        <a href="javascript:location.reload()" class="reset-link">最初から占いをやり直す</a>
     </div>
 </div>
 
@@ -50,52 +73,47 @@
         { id: 'r', name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/', quote: '日曜の朝、洗い立てのシーツに包まれるような幸福。' }
     ];
 
-    let visualChoice = "";
+    let scores = { calm: 0, active: 0, sharp: 0 };
 
-    function start() {
-        const list = document.getElementById('bottle-list');
-        perfumes.forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'bottle-option';
-            div.innerHTML = `<img src="${p.img}"><p style="font-size:0.8rem; margin-top:10px;">${p.name}</p>`;
-            div.onclick = () => {
-                visualChoice = p.id;
-                document.getElementById('step1').style.display = 'none';
-                document.getElementById('step2').style.display = 'block';
-            };
-            list.appendChild(div);
-        });
+    // ボトル生成
+    const list = document.getElementById('bottle-list');
+    perfumes.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.innerHTML = `<img src="${p.img}"><p style="font-size:0.7rem; margin-top:10px;">${p.name}</p>`;
+        div.onclick = () => next('step1', 'step2');
+        list.appendChild(div);
+    });
+
+    function next(current, following, scoreType) {
+        if (scoreType) scores[scoreType]++;
+        document.getElementById(current).classList.remove('active');
+        document.getElementById(following).classList.add('active');
+        window.scrollTo(0, 0);
     }
 
-    function finish(innerNeed) {
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'block';
+    function finish(scoreType) {
+        scores[scoreType]++;
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
         
         let result;
-        let message = "";
-
-        // ★裏切りロジック
-        if (innerNeed === 1) { // 安らぎを求めている
+        if (scores.calm >= scores.active && scores.calm >= scores.sharp) {
             result = perfumes[3]; // レイジーサンデー
-            message = "見た目の好みを超えて、今のあなたは「解放」を求めているようです。";
-        } else if (innerNeed === 2) { // 自信を求めている
+        } else if (scores.active >= scores.sharp) {
             result = perfumes[2]; // ソヴァージュ
-            message = "あなたの本能は、今、力強く周囲をリードするエネルギーを欲しています。";
-        } else { // 洗練を求めている
-            result = (visualChoice === 'i') ? perfumes[1] : perfumes[0]; // イマジナシオン or ブルガリ
-            message = "洗練された佇まいの裏に、揺るぎない誠実さを秘めています。";
+        } else {
+            result = (Math.random() > 0.5) ? perfumes[1] : perfumes[0]; // イマジナシオン or ブルガリ
         }
 
         document.getElementById('res-content').innerHTML = `
-            <p style="font-size:0.9rem; margin-bottom:20px;">${message}</p>
             <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.5rem;">${result.name}</h2>
-            <div style="background:#111; padding:15px; font-size:0.8rem; border-left:2px solid var(--accent); text-align:left;">${result.quote}</div>
+            <h2 style="font-size:1.6rem; margin-top:0;">${result.name}</h2>
+            <div class="review-box">${result.quote}</div>
         `;
         document.getElementById('res-link').href = result.link;
+        window.scrollTo(0, 0);
     }
-
-    start();
 </script>
 </body>
 </html>
