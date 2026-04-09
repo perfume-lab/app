@@ -19,7 +19,7 @@ const masterPerfumes = [
     type: 'clean', 
     style: 'minimal',
     quote: 'グレープフルーツが弾ける、水辺の静寂を纏う香り。',
-    coloria_url: '<a href="//af.moshimo.com/af/c/click?a_id=5473106&p_id=2256&pc_id=4820&pl_id=29950" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" attributionsrc><img src="//image.moshimo.com/af-img/1708/000000029950.jpg" width="320" height="100" style="border:none;"></a><img src="//i.moshimo.com/af/i/impression?a_id=5473106&p_id=2256&pc_id=4820&pl_id=29950" width="1" height="1" style="border:none;" loading="lazy">', // もしものリンク
+    
     review_url: 'nile.html'  // ← ここをファイル名と一致させる
 },
     { id: 11, name: 'Byredo ブランシュ', img: 'images/blanche-1.jpg', type: 'clean', style: 'minimal', quote: '洗いたての洗濯物のような、純粋な清潔感。' },
