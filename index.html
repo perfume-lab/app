@@ -263,6 +263,15 @@
         `;
     }
 
+        // showResult関数の中で adHtml を作っているあたりの記述
+let reviewBtn = '';
+if (result.review_url && result.review_url !== "") {
+    reviewBtn = `
+        <a href="${result.review_url}" class="main-btn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); margin-top: 15px; display: block; text-decoration: none; line-height: 50px;">
+            マニアの1200字徹底レビューを読む
+        </a>`;
+}
+
     // 結果画面への流し込み
     document.getElementById('res-content').innerHTML = `
         <img src="${result.img}" class="res-img">
