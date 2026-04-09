@@ -26,7 +26,42 @@
         .controls { display: flex; gap: 40px; }
         .round-btn { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #333; background: rgba(255,255,255,0.05); color: #fff; font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
 
-        .screen { display: none; width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.5s ease-out; }
+        /* 全ての画面共通で中央揃えを保証する */
+.screen {
+    display: none;
+    width: 100%;
+    max-width: 400px;
+    text-align: center; /* 内部の要素を中央へ */
+    animation: fadeIn 0.5s ease-out;
+    margin: 0 auto;    /* 外側の余白を自動にして中央へ */
+}
+
+/* ステージ00などのボタンコンテナ */
+.shelf-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 子要素（ボタン）を中央に寄せる */
+    gap: 15px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* 「最初から占う」ボタンを分かりやすく */
+.retry-link {
+    color: #888;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 40px;
+    padding: 10px 20px;
+    border: 1px solid #333;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+.retry-link:active {
+    background: #333;
+    color: var(--accent);
+}
         .active { display: block; }
         .btn-q { display: block; width: 100%; padding: 18px; margin: 12px 0; background: var(--card); border: 1px solid #333; color: #fff; border-radius: 8px; text-align: left; }
         
