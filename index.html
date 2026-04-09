@@ -200,19 +200,48 @@
     }
 
     function showResult() {
-        nextScreen('step2', 'result-screen');
-        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-        let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
-        if (!result) result = masterPerfumes[likedIds[0] !== undefined ? likedIds[0] : 0];
+    nextScreen('step2', 'result-screen');
+    let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
+    
+    // 1. スワイプで「○」した中から、性格診断の結果（topTrait）に合うものを探す
+    let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
+    
+    // 2. もし見つからなければ、最初に「○」したものを出す
+    if (!result) result = masterPerfumes.find(p => p.id === likedIds[0]);
+    
+    // 3. それでもなければ、名簿の1番目を出す
+    if (!result) result = masterPerfumes[0];
 
-        document.getElementById('res-content').innerHTML = `
-            <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.5rem; margin:0 0 10px;">${result.name}</h2>
-            <div class="review-box">${result.quote}</div>
+    // --- ここから広告判定ロジック ---
+    let adHtml = '';
+    
+    // data.js の coloria_url に文字が入っているか判定
+    if (result.coloria_url && result.coloria_url !== "") {
+        adHtml = `
+            <div class="ad-container">
+                <p class="ad-label">── TRIAL SET ──</p>
+                <a href="${result.coloria_url}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade">
+                    <img src="//image.moshimo.com/af-img/1708/000000029950.jpg" width="320" height="100" class="ad-banner">
+                </a>
+                <p style="font-size:0.6rem; color:#555; margin-top:10px;">※本ページはプロモーションが含まれています</p>
+            </div>
         `;
-        const urlName = result.name.toLowerCase().replace(/ /g, '-');
-        document.getElementById('res-link').href = `https://www.celes-perfume.com/product/${urlName}/`;
     }
+
+    // 結果画面への流し込み
+    document.getElementById('res-content').innerHTML = `
+        <img src="${result.img}" class="res-img">
+        <h2 style="font-size:1.5rem; margin:0 0 10px;">${result.name}</h2>
+        <div class="review-box">${result.quote}</div>
+        ${adHtml} 
+    `;
+    
+    // 詳細ボタン（Google検索など）のリンク更新
+    const resLink = document.getElementById('res-link');
+    if (resLink) {
+        resLink.href = `https://www.google.com/search?q=${encodeURIComponent(result.name)}+香水`;
+    }
+}
 </script>
 </body>
 </html>
