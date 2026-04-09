@@ -3,116 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>至高の香水瓶占い</title>
+    <title>深層心理・香水瓶占い</title>
     <style>
         :root { --accent: #d4af37; --bg: #0d0d0d; }
-        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; }
+        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; line-height: 1.8; }
         .container { max-width: 500px; margin: auto; }
-        .bottle-option { background: #1a1a1a; border: 1px solid #333; padding: 20px; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+        .bottle-option { background: #1a1a1a; border: 1px solid #333; padding: 20px; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
         .bottle-option:hover { border-color: var(--accent); }
         .bottle-option img { width: 100%; height: 200px; object-fit: contain; }
-        .btn { background: var(--accent); color: #000; padding: 15px; width: 100%; border: none; font-weight: bold; cursor: pointer; }
-        #result-screen { display: none; }
+        .btn-q { display: block; width: 100%; padding: 20px; margin: 10px 0; background: #1a1a1a; color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; }
+        .btn-q:hover { border-color: var(--accent); }
+        #result-screen { display: none; padding-top: 30px; border-top: 1px solid var(--accent); }
+        .res-img { width: 220px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="step1">
-        <p style="color:var(--accent); letter-spacing:0.2em;">ROUND 1</p>
-        <h2>どちらの「佇まい」に惹かれますか？</h2>
-        <div id="pair-container"></div>
+        <p style="color:var(--accent); letter-spacing:0.2em;">VISUAL CHOICE</p>
+        <h2>直感で、あなたの「空間」に置きたいボトルは？</h2>
+        <div id="bottle-list"></div>
     </div>
 
     <div id="step2" style="display:none;">
-        <p style="color:#ff4444; letter-spacing:0.2em;">NEGATIVE CHECK</p>
-        <h2>「これは自分とは違う」と思うのは？</h2>
-        <div id="hate-container"></div>
+        <p style="color:var(--accent); letter-spacing:0.2em;">INNER NEED</p>
+        <h2>今のあなたが、心から求めている「空気」は？</h2>
+        <button class="btn-q" onclick="finish(1)">A. 誰にも邪魔されない、穏やかな安らぎ</button>
+        <button class="btn-q" onclick="finish(2)">B. 周囲を圧倒する、揺るぎない自信</button>
+        <button class="btn-q" onclick="finish(3)">C. 都会的で洗練された、鋭い感性</button>
     </div>
 
     <div id="result-screen">
-        <p style="color:var(--accent);">YOUR BEST MATCH</p>
+        <p style="color:var(--accent); font-size: 0.8rem;">THE TRUE MATCH</p>
         <div id="res-content"></div>
-        <a href="#" id="res-link" class="btn" style="display:inline-block; text-decoration:none; margin-top:20px;">Celesで詳細を見る</a>
+        <a href="#" id="res-link" target="_blank" style="display:inline-block; background:var(--accent); color:#000; padding:15px 40px; text-decoration:none; font-weight:bold; margin-top:20px;">この香りを手に入れる</a>
+        <p><a href="javascript:location.reload()" style="color:#555; text-decoration:none; font-size:0.7rem; display:block; margin-top:30px;">もう一度占う</a></p>
     </div>
 </div>
 
 <script>
     const perfumes = [
-        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '誰からも愛される清潔感の権威。', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/' },
-        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '上品な紅茶と、ハイブランドの気品。', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/' },
-        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: 'ワイルドで力強い、男の野性味。', link: 'https://www.celes-perfume.com/product/dior-sauvage/' },
-        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '洗い立てのシーツのような透明感。', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/' }
+        { id: 'b', name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/', quote: '「清潔感の権威」として、全幅の信頼を寄せられる香り。' },
+        { id: 'i', name: 'LV イマジナシオン', img: 'Imagination-min-1.png', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/', quote: '高貴な紅茶の香りが、あなたの知性を引き立てます。' },
+        { id: 's', name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', link: 'https://www.celes-perfume.com/product/dior-sauvage/', quote: '溢れ出す野性味と、計算された色気の同居。' },
+        { id: 'r', name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/', quote: '日曜の朝、洗い立てのシーツに包まれるような幸福。' }
     ];
 
-    let likedIds = [];
-    let hatedType = "";
+    let visualChoice = "";
 
-    // ROUND 1: 2つのペアから好きな方を選ばせる
-    function startStep1() {
-        const container = document.getElementById('pair-container');
-        // 0番と1番を戦わせる
-        [perfumes[0], perfumes[1]].forEach(p => {
-            const div = createCard(p, () => {
-                likedIds.push(p.id);
-                startStep1Round2();
-            });
-            container.appendChild(div);
-        });
-    }
-
-    function startStep1Round2() {
-        const container = document.getElementById('pair-container');
-        container.innerHTML = '<h2>第2ラウンド</h2>';
-        // 2番と3番を戦わせる
-        [perfumes[2], perfumes[3]].forEach(p => {
-            const div = createCard(p, () => {
-                likedIds.push(p.id);
-                goToStep2();
-            });
-            container.appendChild(div);
-        });
-    }
-
-    function goToStep2() {
-        document.getElementById('step1').style.display = 'none';
-        document.getElementById('step2').style.display = 'block';
-        const container = document.getElementById('hate-container');
-        // 全4つの中から嫌いなタイプを1つ選ばせる
+    function start() {
+        const list = document.getElementById('bottle-list');
         perfumes.forEach(p => {
-            const div = createCard(p, () => {
-                hatedType = p.type;
-                showResult();
-            });
-            container.appendChild(div);
+            const div = document.createElement('div');
+            div.className = 'bottle-option';
+            div.innerHTML = `<img src="${p.img}"><p style="font-size:0.8rem; margin-top:10px;">${p.name}</p>`;
+            div.onclick = () => {
+                visualChoice = p.id;
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            };
+            list.appendChild(div);
         });
     }
 
-    function createCard(p, callback) {
-        const div = document.createElement('div');
-        div.className = 'bottle-option';
-        div.innerHTML = `<img src="${p.img}"><p>${p.name}</p>`;
-        div.onclick = callback;
-        return div;
-    }
-
-    function showResult() {
+    function finish(innerNeed) {
         document.getElementById('step2').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         
-        // 好きに選ばれた2つのうち、嫌いなタイプじゃない方を優先。両方嫌いなタイプなら最初の1つ。
-        const finalId = likedIds.find(id => perfumes[id].type !== hatedType) ?? likedIds[0];
-        const res = perfumes[finalId];
+        let result;
+        let message = "";
+
+        // ★裏切りロジック
+        if (innerNeed === 1) { // 安らぎを求めている
+            result = perfumes[3]; // レイジーサンデー
+            message = "見た目の好みを超えて、今のあなたは「解放」を求めているようです。";
+        } else if (innerNeed === 2) { // 自信を求めている
+            result = perfumes[2]; // ソヴァージュ
+            message = "あなたの本能は、今、力強く周囲をリードするエネルギーを欲しています。";
+        } else { // 洗練を求めている
+            result = (visualChoice === 'i') ? perfumes[1] : perfumes[0]; // イマジナシオン or ブルガリ
+            message = "洗練された佇まいの裏に、揺るぎない誠実さを秘めています。";
+        }
 
         document.getElementById('res-content').innerHTML = `
-            <img src="${res.img}" style="width:200px;">
-            <h2>${res.name}</h2>
-            <p>${res.quote}</p>
+            <p style="font-size:0.9rem; margin-bottom:20px;">${message}</p>
+            <img src="${result.img}" class="res-img">
+            <h2 style="font-size:1.5rem;">${result.name}</h2>
+            <div style="background:#111; padding:15px; font-size:0.8rem; border-left:2px solid var(--accent); text-align:left;">${result.quote}</div>
         `;
-        document.getElementById('res-link').href = res.link;
+        document.getElementById('res-link').href = result.link;
     }
 
-    startStep1();
+    start();
 </script>
 </body>
 </html>
