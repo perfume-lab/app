@@ -3,121 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>至高の4択 - 香水瓶占い</title>
+    <title>至高の香水瓶占い</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0d0d0d; --card-bg: #1a1a1a; }
-        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; line-height: 1.6; }
-        .container { max-width: 600px; margin: auto; }
-        h1 { font-size: 1.4rem; letter-spacing: 0.2em; margin-bottom: 30px; color: var(--accent); }
-        p.sub { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        
-        .bottle-card { background: var(--card-bg); border: 1px solid #333; cursor: pointer; transition: 0.3s; padding: 15px; position: relative; border-radius: 5px; }
-        .bottle-card img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 10px; }
-        .bottle-card:hover { border-color: #666; }
-        
-        /* 選択時のスタイル */
-        .selected { border-color: var(--accent) !important; background: #252525; }
-        .selected::after { content: 'FAVORITE'; position: absolute; top: 5px; left: 5px; background: var(--accent); color: #000; font-size: 0.6rem; padding: 2px 5px; font-weight: bold; }
-        
-        .btn { background: var(--accent); color: #000; padding: 18px 50px; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; display: none; width: 100%; font-size: 1rem; }
-        
-        #result-screen { display: none; border-top: 1px solid var(--accent); pt: 40px; }
-        .res-img { width: 220px; height: auto; margin-bottom: 20px; }
-        .res-name { font-size: 1.8rem; color: #fff; margin: 10px 0; }
-        .review-box { background: #111; padding: 20px; border-left: 3px solid var(--accent); text-align: left; margin: 25px 0; font-size: 0.9rem; }
-        .aff-btn { display: inline-block; background: var(--accent); color: #000; padding: 15px 40px; text-decoration: none; font-weight: bold; border-radius: 2px; margin-top: 20px; }
+        :root { --accent: #d4af37; --bg: #0d0d0d; }
+        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .bottle-option { background: #1a1a1a; border: 1px solid #333; padding: 20px; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+        .bottle-option:hover { border-color: var(--accent); }
+        .bottle-option img { width: 100%; height: 200px; object-fit: contain; }
+        .btn { background: var(--accent); color: #000; padding: 15px; width: 100%; border: none; font-weight: bold; cursor: pointer; }
+        #result-screen { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="step1">
-        <h1>BOTTLE DIVINATION</h1>
-        <p class="sub">直感で「いいな」と思うボトルを3つ選んでください</p>
-        <div class="grid" id="grid1"></div>
-        <button id="to-step2" class="btn">次に進む</button>
+        <p style="color:var(--accent); letter-spacing:0.2em;">ROUND 1</p>
+        <h2>どちらの「佇まい」に惹かれますか？</h2>
+        <div id="pair-container"></div>
     </div>
 
     <div id="step2" style="display:none;">
-        <h1>LAST CHOICE</h1>
-        <p class="sub">この中で「自分とは違う」と思うものを1つ選んでください</p>
-        <div class="grid" id="grid2"></div>
+        <p style="color:#ff4444; letter-spacing:0.2em;">NEGATIVE CHECK</p>
+        <h2>「これは自分とは違う」と思うのは？</h2>
+        <div id="hate-container"></div>
     </div>
 
     <div id="result-screen">
-        <p style="letter-spacing: 0.3em; color: var(--accent);">THE BEST MATCH</p>
+        <p style="color:var(--accent);">YOUR BEST MATCH</p>
         <div id="res-content"></div>
-        <a href="#" id="res-link" target="_blank" class="aff-btn">Celesでこの香水を試す</a>
-        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; margin-top:40px; display:block;">占い直す</a></p>
+        <a href="#" id="res-link" class="btn" style="display:inline-block; text-decoration:none; margin-top:20px;">Celesで詳細を見る</a>
     </div>
 </div>
 
 <script>
     const perfumes = [
-        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '「誰からも嫌われない究極の石鹸系」「40代のビジネスマンに。安心感の塊」', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/' },
-        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '「上品でエレガントなシトラスティー」「40代男性、綺麗な透明感。品格が漂う」', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/' },
-        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: '「精気がみなぎるような強い香り」「ワイルド、クール＆セクシー。野性的な魅力」', link: 'https://www.celes-perfume.com/product/dior-sauvage/' },
-        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '「洗い立てのリネンのような柔らかさ」「清潔感の塊。休日の朝のような心地よさ」', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/' }
+        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '誰からも愛される清潔感の権威。', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/' },
+        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '上品な紅茶と、ハイブランドの気品。', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/' },
+        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: 'ワイルドで力強い、男の野性味。', link: 'https://www.celes-perfume.com/product/dior-sauvage/' },
+        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '洗い立てのシーツのような透明感。', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/' }
     ];
 
-    let selected = [];
-    let hatedId = null;
+    let likedIds = [];
+    let hatedType = "";
 
-    // STEP 1 生成
-    const grid1 = document.getElementById('grid1');
-    perfumes.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'bottle-card';
-        div.innerHTML = `<img src="${p.img}"><div style="font-size:0.7rem; color:#666;">STYLE ${p.id + 1}</div>`;
-        div.onclick = () => {
-            if (selected.includes(p.id)) {
-                selected = selected.filter(id => id !== p.id);
-                div.classList.remove('selected');
-            } else if (selected.length < 3) {
-                selected.push(p.id);
-                div.classList.add('selected');
-            }
-            document.getElementById('to-step2').style.display = selected.length === 3 ? 'block' : 'none';
-        };
-        grid1.appendChild(div);
-    });
+    // ROUND 1: 2つのペアから好きな方を選ばせる
+    function startStep1() {
+        const container = document.getElementById('pair-container');
+        // 0番と1番を戦わせる
+        [perfumes[0], perfumes[1]].forEach(p => {
+            const div = createCard(p, () => {
+                likedIds.push(p.id);
+                startStep1Round2();
+            });
+            container.appendChild(div);
+        });
+    }
 
-    // STEP 2 へ
-    document.getElementById('to-step2').onclick = () => {
+    function startStep1Round2() {
+        const container = document.getElementById('pair-container');
+        container.innerHTML = '<h2>第2ラウンド</h2>';
+        // 2番と3番を戦わせる
+        [perfumes[2], perfumes[3]].forEach(p => {
+            const div = createCard(p, () => {
+                likedIds.push(p.id);
+                goToStep2();
+            });
+            container.appendChild(div);
+        });
+    }
+
+    function goToStep2() {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
-        const grid2 = document.getElementById('grid2');
-        
-        // 選ばれた3つの中から「嫌いな1つ」を選ばせる
-        perfumes.filter(p => selected.includes(p.id)).forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'bottle-card';
-            div.innerHTML = `<img src="${p.img}">`;
-            div.onclick = () => {
-                hatedId = p.id;
+        const container = document.getElementById('hate-container');
+        // 全4つの中から嫌いなタイプを1つ選ばせる
+        perfumes.forEach(p => {
+            const div = createCard(p, () => {
+                hatedType = p.type;
                 showResult();
-            };
-            grid2.appendChild(div);
+            });
+            container.appendChild(div);
         });
-    };
+    }
+
+    function createCard(p, callback) {
+        const div = document.createElement('div');
+        div.className = 'bottle-option';
+        div.innerHTML = `<img src="${p.img}"><p>${p.name}</p>`;
+        div.onclick = callback;
+        return div;
+    }
 
     function showResult() {
         document.getElementById('step2').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         
-        // 最終ロジック：選んだ3つのうち、嫌いと言わなかった残りの2つからランダム（または優先順）
-        const finalCandidates = selected.filter(id => id !== hatedId);
-        const result = perfumes[finalCandidates[0]]; // 最初の候補を表示
-        
+        // 好きに選ばれた2つのうち、嫌いなタイプじゃない方を優先。両方嫌いなタイプなら最初の1つ。
+        const finalId = likedIds.find(id => perfumes[id].type !== hatedType) ?? likedIds[0];
+        const res = perfumes[finalId];
+
         document.getElementById('res-content').innerHTML = `
-            <img src="${result.img}" class="res-img">
-            <div class="res-name">${result.name}</div>
-            <div class="review-box">${result.quote}</div>
+            <img src="${res.img}" style="width:200px;">
+            <h2>${res.name}</h2>
+            <p>${res.quote}</p>
         `;
-        document.getElementById('res-link').href = result.link;
+        document.getElementById('res-link').href = res.link;
     }
+
+    startStep1();
 </script>
 </body>
 </html>
