@@ -10,16 +10,16 @@
         
         #app { width: 100%; max-width: 400px; height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         
-        .screen { display: none; width: 100%; text-align: center; animation: fadeIn 0.4s ease-out; }
-        .screen.active { display: block; }
+        .screen { display: none; width: 100%; text-align: center; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ステージ00: カテゴリ選択 */
+        /* ステージ共通ボタン */
         .shelf-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin: 30px auto; }
         .shelf-btn { background: transparent; border: 1px solid #444; color: var(--text); padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; font-size: 1rem; }
         .shelf-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ステージ01: ボトル直感セレクト（名前は出さない） */
+        /* ステージ01: ボトル直感セレクト */
         .swipe-container { position: relative; width: 300px; height: 380px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
         .card { position: absolute; width: 100%; height: 100%; background: #151515; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; border: 1px solid #222; }
         .card img { max-width: 100%; max-height: 320px; object-fit: contain; }
@@ -29,13 +29,9 @@
         .review-box { background: #151515; padding: 18px; border-radius: 8px; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.7; border-left: 3px solid var(--accent); text-align: left; }
         
         /* 徹底レビューボタン */
-        .review-btn { display: block; width: 100%; padding: 18px; background: transparent; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; border-radius: 30px; font-weight: bold; margin-bottom: 15px; box-sizing: border-box; }
+        .review-btn { display: block; width: 100%; padding: 18px; background: transparent; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; border-radius: 30px; font-weight: bold; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
         
-        /* 広告エリア */
-        .ad-container { margin: 40px auto 10px; padding: 20px 10px; border-top: 1px solid #222; width: 100%; box-sizing: border-box; }
-        .ad-banner { max-width: 100%; height: auto; border-radius: 5px; }
-        
-        .retry-link { display: inline-block; margin-top: 40px; color: #666; text-decoration: none; padding: 8px 20px; border: 1px solid #222; border-radius: 20px; font-size: 0.75rem; }
+        .retry-link { display: inline-block; margin-top: 30px; color: #666; text-decoration: none; padding: 8px 20px; border: 1px solid #222; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -54,8 +50,8 @@
         <p style="font-size: 0.85rem; color: #888; margin-bottom: 20px;">直感で「好き」なら右へ</p>
         <div id="card-area" class="swipe-container"></div>
         <div style="margin-top: 35px; display: flex; gap: 40px; justify-content: center;">
-            <button onclick="swipe(false)" style="background:none; border:1px solid #444; color:#666; border-radius:50%; width:65px; height:65px; font-size:1.2rem;">✕</button>
-            <button onclick="swipe(true)" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:65px; height:65px; font-size:1.2rem;">○</button>
+            <button onclick="swipe(false)" style="background:none; border:1px solid #444; color:#666; border-radius:50%; width:65px; height:65px; font-size:1.2rem; cursor:pointer;">✕</button>
+            <button onclick="swipe(true)" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:65px; height:65px; font-size:1.2rem; cursor:pointer;">○</button>
         </div>
     </div>
 
@@ -97,7 +93,12 @@
 
     function startSwipe(style) {
         currentStyle = style;
+        // masterPerfumes は data.js で定義されている前提です
         swipeList = masterPerfumes.filter(p => p.style === style);
+        if (swipeList.length === 0) {
+            startQuiz();
+            return;
+        }
         renderCard();
         nextScreen('step0', 'step1');
     }
@@ -112,7 +113,6 @@
         const p = swipeList[0];
         const card = document.createElement('div');
         card.className = 'card';
-        // 名前を隠し、ボトル画像のみ表示
         card.innerHTML = `<img src="${p.img}">`;
         area.appendChild(card);
     }
@@ -141,37 +141,22 @@
             const btn = document.createElement('button');
             btn.className = 'shelf-btn';
             btn.innerText = opt.text;
-            btn.onclick = () => { userTraits[opt.trait]++; questionIndex++; showQuestion(); };
+            btn.onclick = () => { 
+                userTraits[opt.trait]++; 
+                questionIndex++; 
+                showQuestion(); 
+            };
             optArea.appendChild(btn);
         });
     }
 
-  function showResult() {
-    nextScreen('step2', 'result-screen');
-    let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-    
-    // ユーザーの「好き」と「性格診断」の両方に合致するものを探す
-    let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
-    // 見つからなければ「好き」の中から選ぶ
-    if (!result) result = masterPerfumes.find(p => likedIds.includes(p.id));
-    // それでもなければマスターデータの先頭
-    if (!result) result = masterPerfumes[0];
-
-    // ボタンの作成（レビューがある場合のみ表示）
-    let reviewBtn = '';
-    if (result.review_url && result.review_url !== "") {
-        reviewBtn = `<a href="${result.review_url}" class="review-btn">マニアの1200字徹底レビューを読む</a>`;
-    }
-
-    document.getElementById('res-content').innerHTML = `
-        <img src="${result.img}" class="res-img">
-        <h2 style="font-size:1.4rem; margin:0 0 15px; color:var(--accent);">${result.name}</h2>
-        <div class="review-box">${result.quote}</div>
+    function showResult() {
+        nextScreen('step2', 'result-screen');
+        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
         
-        ${reviewBtn}
-        <p><a href="javascript:location.reload()" class="retry-link">もう一度診断する</a></p>
-    `;
-}
+        let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
+        if (!result) result = masterPerfumes.find(p => likedIds.includes(p.id));
+        if (!result) result = masterPerfumes[0];
 
         let reviewBtn = '';
         if (result.review_url && result.review_url !== "") {
@@ -182,9 +167,9 @@
             <img src="${result.img}" class="res-img">
             <h2 style="font-size:1.4rem; margin:0 0 15px; color:var(--accent);">${result.name}</h2>
             <div class="review-box">${result.quote}</div>
+            
             ${reviewBtn}
-            ${adHtml}
-            <p><a href="javascript:location.reload()" class="retry-link">最初から占う</a></p>
+            <p><a onclick="location.reload()" class="retry-link">もう一度診断する</a></p>
         `;
     }
 </script>
