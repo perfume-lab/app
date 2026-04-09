@@ -10,37 +10,39 @@
         
         #app { width: 100%; max-width: 400px; height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         
-        .screen { display: none; width: 100%; text-align: center; animation: fadeIn 0.5s ease-out; }
+        .screen { display: none; width: 100%; text-align: center; animation: fadeIn 0.4s ease-out; }
         .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ステージ00: ボタンをガタガタさせない設定 */
+        /* ステージ00: カテゴリ選択 */
         .shelf-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin: 30px auto; }
         .shelf-btn { background: transparent; border: 1px solid #444; color: var(--text); padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; font-size: 1rem; }
-        .shelf-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(212, 175, 55, 0.1); }
+        .shelf-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ステージ01: 中央配置の徹底 */
-        .swipe-container { position: relative; width: 300px; height: 400px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
-        .card { position: absolute; width: 100%; height: 100%; background: #1a1a1a; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; border: 1px solid #333; transition: transform 0.3s ease-out, opacity 0.3s; }
-        .card img { max-width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 20px; }
+        /* ステージ01: ボトル直感セレクト（名前は出さない） */
+        .swipe-container { position: relative; width: 300px; height: 380px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
+        .card { position: absolute; width: 100%; height: 100%; background: #151515; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; border: 1px solid #222; }
+        .card img { max-width: 100%; max-height: 320px; object-fit: contain; }
 
         /* 診断結果画面 */
-        .res-img { width: 100%; max-width: 250px; border-radius: 10px; margin-bottom: 20px; }
-        .review-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; border-left: 3px solid var(--accent); text-align: left; }
-        .main-btn { display: block; width: 100%; padding: 15px; background: var(--accent); color: #000; text-decoration: none; border-radius: 30px; font-weight: bold; margin-top: 10px; box-sizing: border-box; }
+        .res-img { width: 100%; max-width: 240px; border-radius: 8px; margin-bottom: 20px; }
+        .review-box { background: #151515; padding: 18px; border-radius: 8px; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.7; border-left: 3px solid var(--accent); text-align: left; }
+        
+        /* 徹底レビューボタン */
+        .review-btn { display: block; width: 100%; padding: 18px; background: transparent; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; border-radius: 30px; font-weight: bold; margin-bottom: 15px; box-sizing: border-box; }
         
         /* 広告エリア */
-        .ad-container { margin: 30px auto; padding: 15px; border-top: 1px solid #333; width: 100%; box-sizing: border-box; }
-        .ad-banner { max-width: 100%; height: auto; border-radius: 8px; vertical-align: middle; }
+        .ad-container { margin: 40px auto 10px; padding: 20px 10px; border-top: 1px solid #222; width: 100%; box-sizing: border-box; }
+        .ad-banner { max-width: 100%; height: auto; border-radius: 5px; }
         
-        .retry-link { display: inline-block; margin-top: 30px; color: #888; text-decoration: none; padding: 10px 20px; border: 1px solid #333; border-radius: 20px; font-size: 0.8rem; }
+        .retry-link { display: inline-block; margin-top: 40px; color: #666; text-decoration: none; padding: 8px 20px; border: 1px solid #222; border-radius: 20px; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="step0" class="screen active">
-        <h1 style="color: var(--accent); font-size: 1.5rem;">今の気分で選ぶ</h1>
+        <h1 style="color: var(--accent); font-size: 1.4rem; letter-spacing: 0.1em;">今の気分で選ぶ</h1>
         <div class="shelf-grid">
             <button class="shelf-btn" onclick="startSwipe('minimal')">清潔感・シンプル</button>
             <button class="shelf-btn" onclick="startSwipe('luxury')">高級感・重厚</button>
@@ -49,19 +51,20 @@
     </div>
 
     <div id="step1" class="screen">
+        <p style="font-size: 0.85rem; color: #888; margin-bottom: 20px;">直感で「好き」なら右へ</p>
         <div id="card-area" class="swipe-container"></div>
-        <div style="margin-top: 30px; display: flex; gap: 40px; justify-content: center;">
-            <button onclick="swipe(false)" style="background:none; border:2px solid #ff4b2b; color:#ff4b2b; border-radius:50%; width:60px; height:60px; font-size:1.5rem;">✕</button>
-            <button onclick="swipe(true)" style="background:none; border:2px solid #00ff87; color:#00ff87; border-radius:50%; width:60px; height:60px; font-size:1.5rem;">○</button>
+        <div style="margin-top: 35px; display: flex; gap: 40px; justify-content: center;">
+            <button onclick="swipe(false)" style="background:none; border:1px solid #444; color:#666; border-radius:50%; width:65px; height:65px; font-size:1.2rem;">✕</button>
+            <button onclick="swipe(true)" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:65px; height:65px; font-size:1.2rem;">○</button>
         </div>
     </div>
 
     <div id="step2" class="screen">
-        <h2 id="q-text" style="font-size: 1.2rem; margin-bottom: 30px;"></h2>
+        <h2 id="q-text" style="font-size: 1.1rem; margin-bottom: 30px; letter-spacing: 0.05em;"></h2>
         <div class="shelf-grid" id="q-options"></div>
     </div>
 
-    <div id="result-screen" class="screen" style="overflow-y: auto; height: 100vh; padding-top: 40px;">
+    <div id="result-screen" class="screen" style="overflow-y: auto; height: 100vh; padding: 40px 20px;">
         <div id="res-content"></div>
     </div>
 </div>
@@ -80,7 +83,7 @@
             { text: "一流ホテルのラウンジ", trait: "luxury" },
             { text: "ジムでハードなトレーニング", trait: "power" }
         ]},
-        { text: "今の仕事に求めているものは？", options: [
+        { text: "仕事におけるスタンスは？", options: [
             { text: "効率と誠実さ", trait: "clean" },
             { text: "品格とステータス", trait: "luxury" },
             { text: "圧倒的な成果", trait: "power" }
@@ -109,7 +112,8 @@
         const p = swipeList[0];
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<img src="${p.img}"><p>${p.name}</p>`;
+        // 名前を隠し、ボトル画像のみ表示
+        card.innerHTML = `<img src="${p.img}">`;
         area.appendChild(card);
     }
 
@@ -153,26 +157,25 @@
         if (result.coloria_url && result.coloria_url !== "") {
             adHtml = `
                 <div class="ad-container">
-                    <p style="font-size:0.7rem; color:var(--accent); margin-bottom:10px;">── TRIAL SET ──</p>
+                    <p style="font-size:0.65rem; color:#888; margin-bottom:12px; letter-spacing:0.1em;">── TRIAL SET ──</p>
                     <a href="${result.coloria_url}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade">
                         <img src="//image.moshimo.com/af-img/1708/000000029950.jpg" width="320" height="100" class="ad-banner">
                     </a>
-                    <p style="font-size:0.6rem; color:#555; margin-top:10px;">※本ページはプロモーションが含まれています</p>
+                    <p style="font-size:0.55rem; color:#444; margin-top:10px;">※本ページはプロモーションが含まれています</p>
                 </div>
             `;
         }
 
         let reviewBtn = '';
         if (result.review_url && result.review_url !== "") {
-            reviewBtn = `<a href="${result.review_url}" class="main-btn" style="background:transparent; border:1px solid var(--accent); color:var(--accent);">マニアの1200字徹底レビューを読む</a>`;
+            reviewBtn = `<a href="${result.review_url}" class="review-btn">マニアの1200字徹底レビューを読む</a>`;
         }
 
         document.getElementById('res-content').innerHTML = `
             <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.5rem; margin:0 0 10px;">${result.name}</h2>
+            <h2 style="font-size:1.4rem; margin:0 0 15px; color:var(--accent);">${result.name}</h2>
             <div class="review-box">${result.quote}</div>
             ${reviewBtn}
-            <a href="https://www.google.com/search?q=${encodeURIComponent(result.name)}+香水" target="_blank" class="main-btn">この香水を詳しく調べる</a>
             ${adHtml}
             <p><a href="javascript:location.reload()" class="retry-link">最初から占う</a></p>
         `;
