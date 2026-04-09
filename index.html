@@ -2,43 +2,46 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>直感スワイプ・香水瓶占い</title>
     <style>
         :root { --accent: #d4af37; --bg: #050505; --card: #1a1a1a; --yes: #44ffaa; --no: #ff4444; }
-        body, html { height: 100%; margin: 0; font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #fff; overflow: hidden; }
+        body, html { height: 100%; margin: 0; font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #fff; overflow: hidden; touch-action: none; }
         .container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         
-        .stage-title { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 20px; }
-        h2 { font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; font-weight: normal; }
+        .stage-title { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 10px; }
+        h2 { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.6; font-weight: normal; min-height: 3.2em; }
 
-        /* スワイプカードのエリア */
-        .swipe-area { position: relative; width: 280px; height: 380px; margin-bottom: 40px; }
+        /* スワイプカード */
+        .swipe-area { position: relative; width: 260px; height: 340px; margin-bottom: 30px; perspective: 1000px; }
         .swipe-card { 
             position: absolute; width: 100%; height: 100%; background: var(--card); border: 1px solid #333;
-            border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: transform 0.4s, opacity 0.4s; touch-action: none;
+            border-radius: 15px; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.4s ease, opacity 0.4s; backface-visibility: hidden;
         }
-        .swipe-card img { width: 85%; height: 80%; object-fit: contain; pointer-events: none; }
+        .swipe-card img { width: 80%; height: 80%; object-fit: contain; pointer-events: none; }
         
-        /* スワイプボタン（直感操作用） */
+        /* 操作ボタン */
         .controls { display: flex; gap: 40px; }
         .round-btn { 
-            width: 65px; height: 65px; border-radius: 50%; border: 2px solid #333; 
-            background: none; color: #fff; font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+            width: 70px; height: 70px; border-radius: 50%; border: 2px solid #333; 
+            background: rgba(255,255,255,0.05); color: #fff; font-size: 1.8rem; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-no:hover { border-color: var(--no); color: var(--no); }
-        .btn-yes:hover { border-color: var(--yes); color: var(--yes); }
+        .btn-no:active { border-color: var(--no); color: var(--no); transform: scale(0.9); }
+        .btn-yes:active { border-color: var(--yes); color: var(--yes); transform: scale(0.9); }
 
-        /* 設問・結果画面 */
-        .screen { display: none; width: 100%; max-width: 450px; text-align: center; animation: fadeIn 0.6s; }
+        /* クイズ・結果画面 */
+        .screen { display: none; width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.5s ease-out; }
         .active { display: block; }
-        .btn-q { display: block; width: 100%; padding: 18px; margin: 10px 0; background: var(--card); color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; }
+        .btn-q { display: block; width: 100%; padding: 18px; margin: 12px 0; background: var(--card); color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; border-radius: 8px; transition: 0.2s; }
+        .btn-q:active { border-color: var(--accent); background: #252525; }
         
-        .res-img { width: 180px; margin-bottom: 20px; }
-        .main-btn { display: block; background: var(--accent); color: #000; padding: 16px; text-decoration: none; font-weight: bold; margin-top: 20px; }
+        .res-img { width: 180px; margin-bottom: 20px; border-radius: 10px; }
+        .main-btn { display: block; background: var(--accent); color: #000; padding: 16px; text-decoration: none; font-weight: bold; border-radius: 5px; margin-top: 20px; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -46,105 +49,127 @@
 <div class="container">
     <div id="step1" class="screen active">
         <p class="stage-title">STAGE 01: VISUAL</p>
-        <h2>直感で「好き」なら右へ、<br>「違う」なら左へ。</h2>
+        <h2>直感で判別してください。<br>この造形は「◯」か「×」か。</h2>
         <div class="swipe-area" id="swipe-container"></div>
         <div class="controls">
-            <button class="round-btn btn-no" onclick="handleSwipe(false)">✘</button>
-            <button class="round-btn btn-yes" onclick="handleSwipe(true)">✔</button>
+            <button class="round-btn btn-no" onclick="handleBtn(false)">×</button>
+            <button class="round-btn btn-yes" onclick="handleBtn(true)">○</button>
         </div>
     </div>
 
     <div id="step2" class="screen">
-        <p class="stage-title">STAGE 02: INNER</p>
-        <h2 id="q-text">今のあなたが、<br>心から求めている「空気」は？</h2>
+        <p class="stage-title" id="stage-num">STAGE 02</p>
+        <h2 id="q-text"></h2>
         <div id="q-options"></div>
     </div>
 
     <div id="result-screen" class="screen">
-        <p class="stage-title">THE RESULT</p>
+        <p class="stage-title">ANALYSIS COMPLETED</p>
         <div id="res-content"></div>
-        <a href="#" id="res-link" target="_blank" class="main-btn">Celesで手に入れる</a>
-        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; display:inline-block; margin-top:20px;">最初からやり直す</a></p>
+        <a href="#" id="res-link" target="_blank" class="main-btn">物語の続きを手に入れる</a>
+        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; display:inline-block; margin-top:25px; border-bottom: 1px solid #222;">やり直す</a></p>
     </div>
 </div>
 
 <script>
     const perfumes = [
-        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '王道の清潔感。', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/' },
-        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '洗練された知性。', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/' },
-        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: 'ワイルドな自信。', link: 'https://www.celes-perfume.com/product/dior-sauvage/' },
-        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '穏やかな安らぎ。', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/' }
+        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '揺るぎない誠実さと清潔感。' },
+        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '知性を磨き上げる、至高の紅茶。' },
+        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: '本能を呼び覚ます、野生の気品。' },
+        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '安らぎに包まれる、特別な休日。' }
     ];
 
     let likedIds = [];
-    let currentCardIndex = perfumes.length - 1;
+    let currentIdx = perfumes.length - 1;
+    let currentQ = 0;
+    let userTraits = { clean: 0, luxury: 0, power: 0 };
 
-    // カードの生成（重なり順を制御）
+    // クイズ内容
+    const quizData = [
+        { text: "今のあなたの「理想」に近い場所は？", options: [
+            { t: "静かな書斎や寺院", val: "luxury" }, { t: "賑やかな都会のラウンジ", val: "power" }, { t: "雨上がりの森か公園", val: "clean" }
+        ]},
+        { text: "他人に抱かせたい「第一印象」は？", options: [
+            { t: "隙のないプロフェッショナル", val: "luxury" }, { t: "頼りがいのあるリーダー", val: "power" }, { t: "親しみやすく清潔な人", val: "clean" }
+        ]}
+    ];
+
+    // 初期化：カード生成
     const container = document.getElementById('swipe-container');
-    perfumes.forEach((p, index) => {
+    perfumes.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'swipe-card';
-        card.id = 'card-' + index;
-        card.style.zIndex = index;
+        card.id = `card-${i}`;
+        card.style.zIndex = i;
         card.innerHTML = `<img src="${p.img}">`;
+        
+        // スマホのスワイプ操作（簡易版）
+        let startX;
+        card.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        card.addEventListener('touchend', e => {
+            let diff = e.changedTouches[0].clientX - startX;
+            if (Math.abs(diff) > 50) handleBtn(diff > 0);
+        });
+        
         container.appendChild(card);
     });
 
-    function handleSwipe(isLike) {
-        if (currentCardIndex < 0) return;
-        
-        const card = document.getElementById('card-' + currentCardIndex);
+    function handleBtn(isLike) {
+        if (currentIdx < 0) return;
+        const card = document.getElementById(`card-${currentIdx}`);
         if (isLike) {
-            likedIds.push(currentCardIndex);
-            card.style.transform = 'translateX(200%) rotate(20deg)';
+            likedIds.push(currentIdx);
+            card.style.transform = 'translateX(150%) rotate(20deg)';
         } else {
-            card.style.transform = 'translateX(-200%) rotate(-20deg)';
+            card.style.transform = 'translateX(-150%) rotate(-20deg)';
         }
         card.style.opacity = '0';
-        
-        currentCardIndex--;
-
-        if (currentCardIndex < 0) {
-            setTimeout(() => {
-                document.getElementById('step1').classList.remove('active');
-                showInnerQuiz();
-            }, 500);
-        }
+        currentIdx--;
+        if (currentIdx < 0) setTimeout(showQuiz, 400);
     }
 
-    function showInnerQuiz() {
+    function showQuiz() {
+        document.getElementById('step1').classList.remove('active');
         const screen = document.getElementById('step2');
         screen.classList.add('active');
-        const optContainer = document.getElementById('q-options');
-        const questions = [
-            { text: "誰にも邪魔されない、穏やかな安らぎ", type: "clean" },
-            { text: "周囲を圧倒する、揺るぎない自信", type: "power" },
-            { text: "都会的で洗練された、鋭い感性", type: "luxury" }
-        ];
         
-        questions.forEach(q => {
+        const data = quizData[currentQ];
+        document.getElementById('q-text').innerText = data.text;
+        document.getElementById('stage-num').innerText = `STAGE 0${currentQ + 2}`;
+        
+        const optCont = document.getElementById('q-options');
+        optCont.innerHTML = '';
+        data.options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'btn-q';
-            btn.innerText = q.text;
-            btn.onclick = () => finish(q.type);
-            optContainer.appendChild(btn);
+            btn.innerText = opt.t;
+            btn.onclick = () => {
+                userTraits[opt.val]++;
+                currentQ++;
+                if (currentQ < quizData.length) showQuiz(); else showResult();
+            };
+            optCont.appendChild(btn);
         });
     }
 
-    function finish(hatedType) {
+    function showResult() {
         document.getElementById('step2').classList.remove('active');
         document.getElementById('result-screen').classList.add('active');
         
-        // 好きに選んだものの中から、内面クイズの属性に合うものを優先（なければ好きの1つ目）
-        let result = perfumes.find(p => likedIds.includes(p.id) && p.type === hatedType);
+        // スコア集計：最も高いTraitに合う香水を探す
+        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
+        
+        // 「好き」と答えたボトルの中から、内面に合うものを選ぶ
+        let result = perfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
+        // 合致がなければ「好き」の中から選ぶ
         if (!result) result = perfumes[likedIds[0] || 0];
 
         document.getElementById('res-content').innerHTML = `
             <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.5rem; margin-top:0;">${result.name}</h2>
-            <div style="background:#111; padding:20px; border-left:2px solid var(--accent); text-align:left; font-size:0.85rem;">${result.quote}</div>
+            <h2 style="font-size:1.5rem; margin:0 0 10px;">${result.name}</h2>
+            <div class="review-box">${result.quote}</div>
         `;
-        document.getElementById('res-link').href = result.link;
+        document.getElementById('res-link').href = `https://www.celes-perfume.com/product/${result.name.toLowerCase().replace(/ /g, '-')}/`;
     }
 </script>
 </body>
