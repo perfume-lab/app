@@ -146,25 +146,32 @@
         });
     }
 
-    function showResult() {
-        nextScreen('step2', 'result-screen');
-        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-        let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
-        if (!result) result = masterPerfumes.find(p => p.id === likedIds[0]);
-        if (!result) result = masterPerfumes[0];
+  function showResult() {
+    nextScreen('step2', 'result-screen');
+    let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
+    
+    // ユーザーの「好き」と「性格診断」の両方に合致するものを探す
+    let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
+    // 見つからなければ「好き」の中から選ぶ
+    if (!result) result = masterPerfumes.find(p => likedIds.includes(p.id));
+    // それでもなければマスターデータの先頭
+    if (!result) result = masterPerfumes[0];
 
-        let adHtml = '';
-        if (result.coloria_url && result.coloria_url !== "") {
-            adHtml = `
-                <div class="ad-container">
-                    <p style="font-size:0.65rem; color:#888; margin-bottom:12px; letter-spacing:0.1em;">── TRIAL SET ──</p>
-                    <a href="${result.coloria_url}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade">
-                        <img src="//image.moshimo.com/af-img/1708/000000029950.jpg" width="320" height="100" class="ad-banner">
-                    </a>
-                    <p style="font-size:0.55rem; color:#444; margin-top:10px;">※本ページはプロモーションが含まれています</p>
-                </div>
-            `;
-        }
+    // ボタンの作成（レビューがある場合のみ表示）
+    let reviewBtn = '';
+    if (result.review_url && result.review_url !== "") {
+        reviewBtn = `<a href="${result.review_url}" class="review-btn">マニアの1200字徹底レビューを読む</a>`;
+    }
+
+    document.getElementById('res-content').innerHTML = `
+        <img src="${result.img}" class="res-img">
+        <h2 style="font-size:1.4rem; margin:0 0 15px; color:var(--accent);">${result.name}</h2>
+        <div class="review-box">${result.quote}</div>
+        
+        ${reviewBtn}
+        <p><a href="javascript:location.reload()" class="retry-link">もう一度診断する</a></p>
+    `;
+}
 
         let reviewBtn = '';
         if (result.review_url && result.review_url !== "") {
