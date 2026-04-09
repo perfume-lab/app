@@ -10,9 +10,8 @@
         .container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         
         .stage-title { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 10px; }
-        h2 { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.6; font-weight: normal; min-height: 3.2em; }
+        h2 { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.6; font-weight: normal; min-height: 3.2em; text-align: center; }
 
-        /* スワイプカード */
         .swipe-area { position: relative; width: 260px; height: 340px; margin-bottom: 30px; perspective: 1000px; }
         .swipe-card { 
             position: absolute; width: 100%; height: 100%; background: var(--card); border: 1px solid #333;
@@ -21,7 +20,6 @@
         }
         .swipe-card img { width: 80%; height: 80%; object-fit: contain; pointer-events: none; }
         
-        /* 操作ボタン */
         .controls { display: flex; gap: 40px; }
         .round-btn { 
             width: 70px; height: 70px; border-radius: 50%; border: 2px solid #333; 
@@ -32,13 +30,13 @@
         .btn-no:active { border-color: var(--no); color: var(--no); transform: scale(0.9); }
         .btn-yes:active { border-color: var(--yes); color: var(--yes); transform: scale(0.9); }
 
-        /* クイズ・結果画面 */
         .screen { display: none; width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.5s ease-out; }
         .active { display: block; }
-        .btn-q { display: block; width: 100%; padding: 18px; margin: 12px 0; background: var(--card); color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; border-radius: 8px; transition: 0.2s; }
+        .btn-q { display: block; width: 100%; padding: 18px; margin: 12px 0; background: var(--card); color: #fff; border: 1px solid #333; cursor: pointer; text-align: left; border-radius: 8px; transition: 0.2s; font-size: 0.95rem; }
         .btn-q:active { border-color: var(--accent); background: #252525; }
         
         .res-img { width: 180px; margin-bottom: 20px; border-radius: 10px; }
+        .review-box { background: #111; padding: 20px; border-left: 2px solid var(--accent); text-align: left; font-size: 0.85rem; line-height: 1.6; }
         .main-btn { display: block; background: var(--accent); color: #000; padding: 16px; text-decoration: none; font-weight: bold; border-radius: 5px; margin-top: 20px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -66,25 +64,28 @@
     <div id="result-screen" class="screen">
         <p class="stage-title">ANALYSIS COMPLETED</p>
         <div id="res-content"></div>
-        <a href="#" id="res-link" target="_blank" class="main-btn">物語の続きを手に入れる</a>
-        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; display:inline-block; margin-top:25px; border-bottom: 1px solid #222;">やり直す</a></p>
+        <a href="#" id="res-link" target="_blank" class="main-btn">この香りの詳細を見る</a>
+        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; display:inline-block; margin-top:25px; border-bottom: 1px solid #222;">もう一度占う</a></p>
     </div>
 </div>
 
 <script>
+    // 1. データ定義（imagesフォルダ対応）
     const perfumes = [
-        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '揺るぎない誠実さと清潔感。' },
-        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '知性を磨き上げる、至高の紅茶。' },
-        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: '本能を呼び覚ます、野生の気品。' },
-        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '安らぎに包まれる、特別な休日。' }
+        { id: 0, name: 'ブルガリ プールオム', img: 'images/Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '揺るぎない誠実さと清潔感。' },
+        { id: 1, name: 'LV イマジナシオン', img: 'images/Imagination-min-1.png', type: 'luxury', quote: '知性を磨き上げる、至高の紅茶。' },
+        { id: 2, name: 'Dior ソヴァージュ', img: 'images/dior-sauvage-min.png', type: 'power', quote: '本能を呼び覚ます、野生の気品。' },
+        { id: 3, name: 'レイジーサンデーモーニング', img: 'images/replica-lazy-sunday-morning-min.png', type: 'clean', quote: '安らぎに包まれる、特別な休日。' }
     ];
 
+    // 2. 配列をランダムに並び替える（シャッフル）
+    const shuffledPerfumes = [...perfumes].sort(() => Math.random() - 0.5);
+
     let likedIds = [];
-    let currentIdx = perfumes.length - 1;
+    let currentIdx = shuffledPerfumes.length - 1;
     let currentQ = 0;
     let userTraits = { clean: 0, luxury: 0, power: 0 };
 
-    // クイズ内容
     const quizData = [
         { text: "今のあなたの「理想」に近い場所は？", options: [
             { t: "静かな書斎や寺院", val: "luxury" }, { t: "賑やかな都会のラウンジ", val: "power" }, { t: "雨上がりの森か公園", val: "clean" }
@@ -94,16 +95,15 @@
         ]}
     ];
 
-    // 初期化：カード生成
+    // 初期化：シャッフルされた順でカード生成
     const container = document.getElementById('swipe-container');
-    perfumes.forEach((p, i) => {
+    shuffledPerfumes.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'swipe-card';
         card.id = `card-${i}`;
         card.style.zIndex = i;
         card.innerHTML = `<img src="${p.img}">`;
         
-        // スマホのスワイプ操作（簡易版）
         let startX;
         card.addEventListener('touchstart', e => startX = e.touches[0].clientX);
         card.addEventListener('touchend', e => {
@@ -118,7 +118,7 @@
         if (currentIdx < 0) return;
         const card = document.getElementById(`card-${currentIdx}`);
         if (isLike) {
-            likedIds.push(currentIdx);
+            likedIds.push(shuffledPerfumes[currentIdx].id); // 元のIDを保存
             card.style.transform = 'translateX(150%) rotate(20deg)';
         } else {
             card.style.transform = 'translateX(-150%) rotate(-20deg)';
@@ -156,13 +156,9 @@
         document.getElementById('step2').classList.remove('active');
         document.getElementById('result-screen').classList.add('active');
         
-        // スコア集計：最も高いTraitに合う香水を探す
         let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-        
-        // 「好き」と答えたボトルの中から、内面に合うものを選ぶ
         let result = perfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
-        // 合致がなければ「好き」の中から選ぶ
-        if (!result) result = perfumes[likedIds[0] || 0];
+        if (!result) result = perfumes[likedIds[0] !== undefined ? likedIds[0] : 0];
 
         document.getElementById('res-content').innerHTML = `
             <img src="${result.img}" class="res-img">
