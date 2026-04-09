@@ -3,133 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高度香水診断システム - Data Driven Diagnosis</title>
+    <title>至高の4択 - 香水瓶占い</title>
     <style>
-        body { font-family: "Yu Mincho", serif; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        #app-container { background: rgba(255, 255, 255, 0.95); padding: 2.5rem; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); width: 100%; max-width: 500px; border-top: 4px solid #c5a059; }
-        .progress-bar { height: 2px; background: #eee; margin-bottom: 2rem; }
-        .progress-fill { height: 100%; background: #c5a059; width: 0%; transition: width 0.5s; }
-        .question-step { display: none; }
-        .active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        h2 { font-size: 1.1rem; letter-spacing: 0.1em; margin-bottom: 1.8rem; line-height: 1.5; }
-        .options { display: grid; gap: 10px; }
-        .opt-btn { padding: 15px; border: 1px solid #ddd; background: #fff; cursor: pointer; transition: 0.2s; font-family: inherit; font-size: 0.9rem; text-align: left; }
-        .opt-btn:hover { border-color: #c5a059; background: #fdfaf5; }
-        .opt-btn.selected { background: #c5a059; color: #fff; border-color: #c5a059; }
-        #result-area { display: none; }
-        .result-header { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem; letter-spacing: 0.2em; }
-        .perfume-card { background: #fff; border: 1px solid #eee; padding: 1.5rem; margin-bottom: 1.5rem; position: relative; }
-        .match-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #c5a059; font-weight: bold; margin-bottom: 5px; }
-        .match-bar { height: 3px; background: #f0f0f0; margin-bottom: 15px; }
-        .match-fill { height: 100%; background: #c5a059; transition: width 1s; }
-        .p-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; display: block; }
-        .tag-box { margin: 10px 0; }
-        .tag { display: inline-block; font-size: 0.7rem; padding: 2px 8px; background: #f5f5f5; border: 1px solid #eee; margin: 0 4px 4px 0; color: #666; }
-        .reason { font-size: 0.85rem; color: #777; line-height: 1.6; background: #fafafa; padding: 10px; border-left: 2px solid #eee; }
-        #restart { width: 100%; padding: 12px; background: #333; color: #fff; border: none; cursor: pointer; margin-top: 1rem; letter-spacing: 0.1em; }
+        :root { --accent: #d4af37; --bg: #0d0d0d; --card-bg: #1a1a1a; }
+        body { font-family: 'Hiragino Mincho ProN', serif; background: var(--bg); color: #e0e0e0; text-align: center; padding: 20px; line-height: 1.6; }
+        .container { max-width: 600px; margin: auto; }
+        h1 { font-size: 1.4rem; letter-spacing: 0.2em; margin-bottom: 30px; color: var(--accent); }
+        p.sub { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        
+        .bottle-card { background: var(--card-bg); border: 1px solid #333; cursor: pointer; transition: 0.3s; padding: 15px; position: relative; border-radius: 5px; }
+        .bottle-card img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 10px; }
+        .bottle-card:hover { border-color: #666; }
+        
+        /* 選択時のスタイル */
+        .selected { border-color: var(--accent) !important; background: #252525; }
+        .selected::after { content: 'FAVORITE'; position: absolute; top: 5px; left: 5px; background: var(--accent); color: #000; font-size: 0.6rem; padding: 2px 5px; font-weight: bold; }
+        
+        .btn { background: var(--accent); color: #000; padding: 18px 50px; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; display: none; width: 100%; font-size: 1rem; }
+        
+        #result-screen { display: none; border-top: 1px solid var(--accent); pt: 40px; }
+        .res-img { width: 220px; height: auto; margin-bottom: 20px; }
+        .res-name { font-size: 1.8rem; color: #fff; margin: 10px 0; }
+        .review-box { background: #111; padding: 20px; border-left: 3px solid var(--accent); text-align: left; margin: 25px 0; font-size: 0.9rem; }
+        .aff-btn { display: inline-block; background: var(--accent); color: #000; padding: 15px 40px; text-decoration: none; font-weight: bold; border-radius: 2px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
-    <div id="questions"></div>
-    <div id="result-area">
-        <div class="result-header">ANALYSIS RESULT</div>
-        <div id="perfume-list"></div>
-        <button id="restart" onclick="location.reload()">再診断を行う</button>
+<div class="container">
+    <div id="step1">
+        <h1>BOTTLE DIVINATION</h1>
+        <p class="sub">直感で「いいな」と思うボトルを3つ選んでください</p>
+        <div class="grid" id="grid1"></div>
+        <button id="to-step2" class="btn">次に進む</button>
+    </div>
+
+    <div id="step2" style="display:none;">
+        <h1>LAST CHOICE</h1>
+        <p class="sub">この中で「自分とは違う」と思うものを1つ選んでください</p>
+        <div class="grid" id="grid2"></div>
+    </div>
+
+    <div id="result-screen">
+        <p style="letter-spacing: 0.3em; color: var(--accent);">THE BEST MATCH</p>
+        <div id="res-content"></div>
+        <a href="#" id="res-link" target="_blank" class="aff-btn">Celesでこの香水を試す</a>
+        <p><a href="javascript:location.reload()" style="color:#555; font-size:0.8rem; text-decoration:none; margin-top:40px; display:block;">占い直す</a></p>
     </div>
 </div>
 
 <script>
-    // CSVから抽出した新5軸データ
     const perfumes = [
-        { name: "ジョーマローン イングリッシュペアー", scores: [3.0, 4.0, 5.0, 4.5, 2.0], tags: ["王道", "洋梨", "清潔感"], desc: "誰からも愛される定番。時間と共に甘さが増す変化が魅力です。" },
-        { name: "ディオール ソヴァージュ", scores: [2.5, 3.0, 5.0, 1.0, 5.0], tags: ["ワイルド", "モテ香水", "強印象"], desc: "圧倒的な拡散力。野性的かつ都会的な男性の象徴。" },
-        { name: "LV イマジナシオン", scores: [4.5, 3.0, 3.0, 2.5, 4.0], tags: ["紅茶", "上品", "ハイエンド"], desc: "透き通るようなシトラスティー。持続力も高く、一日中気品が続きます。" },
-        { name: "クリード アバントゥス", scores: [3.5, 4.5, 2.5, 1.0, 4.5], tags: ["成功者", "パイナップル", "渋み"], desc: "力強いフルーティーウッディ。格の違いを見せつける「王者の香り」。" },
-        { name: "ブルガリ プールオム", scores: [4.0, 3.0, 5.0, 3.0, 2.0], tags: ["定番", "石鹸", "リフレッシュ"], desc: "万人受けする清潔感の代名詞。さりげなく香らせたい時に。" },
-        { name: "ギャルソン 2", scores: [2.0, 5.0, 1.5, 3.0, 3.5], tags: ["墨汁", "個性的", "芸術的"], desc: "墨やお香を思わせる唯一無二の香り。自分だけの個性を出したい方へ。" },
-        { name: "ギャルソン ワンダーウッド", scores: [2.0, 2.5, 2.0, 1.0, 3.5], tags: ["寺院", "ウッド", "瞑想"], desc: "深い森や寺院のような落ち着き。シックで大人なウッドの極み。" },
-        { name: "エルメス テールドゥエルメス", scores: [2.5, 4.0, 3.0, 1.0, 4.5], tags: ["大地", "柑橘", "知的"], desc: "オレンジと土の力強さ。仕事のできる知的な男性を演出します。" },
-        { name: "ペンハリガン エンディミオン", scores: [2.0, 4.0, 2.0, 1.0, 3.5], tags: ["英国紳士", "コーヒー", "スパイス"], desc: "甘くスパイシーな、夜の紳士の香り。高級感漂うクラシックな一品。" },
-        { name: "エラK サガノの詩", scores: [5.0, 4.0, 1.0, 3.5, 2.5], tags: ["柚子", "竹林", "和の香り"], desc: "日本の竹林をイメージ。柚子の苦味と抹茶が混じり合う芸術的な爽やかさ。" },
-        { name: "アトリエコロン ウーロンアンフィニ", scores: [4.5, 2.5, 2.0, 3.0, 1.5], tags: ["烏龍茶", "繊細", "ナチュラル"], desc: "青い烏龍茶のような清涼感。主張しすぎず、自分を癒すための香り。" }
+        { id: 0, name: 'ブルガリ プールオム', img: 'Bvlgari-Pour-Homme-min.png', type: 'clean', quote: '「誰からも嫌われない究極の石鹸系」「40代のビジネスマンに。安心感の塊」', link: 'https://www.celes-perfume.com/product/bvlgari-bvlgari-pour-homme/' },
+        { id: 1, name: 'LV イマジナシオン', img: 'Imagination-min-1.png', type: 'luxury', quote: '「上品でエレガントなシトラスティー」「40代男性、綺麗な透明感。品格が漂う」', link: 'https://www.celes-perfume.com/product/louis-vuitton-imagination/' },
+        { id: 2, name: 'Dior ソヴァージュ', img: 'dior-sauvage-min.png', type: 'power', quote: '「精気がみなぎるような強い香り」「ワイルド、クール＆セクシー。野性的な魅力」', link: 'https://www.celes-perfume.com/product/dior-sauvage/' },
+        { id: 3, name: 'レイジーサンデーモーニング', img: 'replica-lazy-sunday-morning-min.png', type: 'clean', quote: '「洗い立てのリネンのような柔らかさ」「清潔感の塊。休日の朝のような心地よさ」', link: 'https://www.celes-perfume.com/product/maison-margiela-lazy-sunday-morning/' }
     ];
 
-    const questions = [
-        { q: "使いたい季節や気温のイメージは？", opts: ["真夏・酷暑でも爽やかに", "春夏メイン", "通年使いたい", "秋冬・寒い時期にじっくり"], vals: [5.0, 4.0, 3.0, 2.0] },
-        { q: "香りの変化（物語性）は重視しますか？", opts: ["ずっと同じ香りでいてほしい", "少しの変化を楽しみたい", "劇的な変化（ラストの余韻）を重視"], vals: [1.0, 3.0, 5.0] },
-        { q: "「定番」と「個性」どちらに惹かれますか？", opts: ["誰もが知る王道がいい", "どちらでも", "人と被らない個性が欲しい"], vals: [5.0, 3.0, 1.0] },
-        { q: "演出したい性別イメージは？", opts: ["男らしく（ワイルド）", "中性的（ユニセックス）", "柔らかく（女性らしさも含む）"], vals: [1.0, 3.0, 4.5] },
-        { q: "香りの持続時間はどの程度が良いですか？", opts: ["数時間で消える軽やかさ", "半日程度", "朝から晩までしっかり"], vals: [1.5, 3.5, 5.0] }
-    ];
+    let selected = [];
+    let hatedId = null;
 
-    let currentStep = 0;
-    let userAnswers = [];
-
-    function init() {
-        const qArea = document.getElementById("questions");
-        questions.forEach((step, idx) => {
-            let html = `<div id="step-${idx}" class="question-step ${idx === 0 ? 'active' : ''}">
-                <h2>Q${idx+1}. ${step.q}</h2>
-                <div class="options">`;
-            step.opts.forEach((opt, oIdx) => {
-                html += `<button class="opt-btn" onclick="answer(${idx}, ${step.vals[oIdx]})">${opt}</button>`;
-            });
-            html += `</div></div>`;
-            qArea.innerHTML += html;
-        });
-    }
-
-    function answer(stepIdx, val) {
-        userAnswers[stepIdx] = val;
-        setTimeout(() => {
-            document.getElementById(`step-${stepIdx}`).classList.remove('active');
-            if (stepIdx + 1 < questions.length) {
-                currentStep++;
-                document.getElementById(`step-${stepIdx + 1}`).classList.add('active');
-                updateProgress();
-            } else {
-                showResult();
+    // STEP 1 生成
+    const grid1 = document.getElementById('grid1');
+    perfumes.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'bottle-card';
+        div.innerHTML = `<img src="${p.img}"><div style="font-size:0.7rem; color:#666;">STYLE ${p.id + 1}</div>`;
+        div.onclick = () => {
+            if (selected.includes(p.id)) {
+                selected = selected.filter(id => id !== p.id);
+                div.classList.remove('selected');
+            } else if (selected.length < 3) {
+                selected.push(p.id);
+                div.classList.add('selected');
             }
-        }, 300);
-    }
+            document.getElementById('to-step2').style.display = selected.length === 3 ? 'block' : 'none';
+        };
+        grid1.appendChild(div);
+    });
 
-    function updateProgress() {
-        const percent = (currentStep / (questions.length - 1)) * 100;
-        document.getElementById("progress").style.width = percent + "%";
-    }
+    // STEP 2 へ
+    document.getElementById('to-step2').onclick = () => {
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        const grid2 = document.getElementById('grid2');
+        
+        // 選ばれた3つの中から「嫌いな1つ」を選ばせる
+        perfumes.filter(p => selected.includes(p.id)).forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'bottle-card';
+            div.innerHTML = `<img src="${p.img}">`;
+            div.onclick = () => {
+                hatedId = p.id;
+                showResult();
+            };
+            grid2.appendChild(div);
+        });
+    };
 
     function showResult() {
-        document.getElementById("progress").style.width = "100%";
-        document.getElementById("questions").style.display = "none";
-        document.getElementById("result-area").style.display = "block";
-
-        let results = perfumes.map(p => {
-            let diff = 0;
-            p.scores.forEach((s, i) => diff += Math.pow(s - userAnswers[i], 2)); // 二乗誤差で精度向上
-            let match = Math.max(0, 100 - Math.sqrt(diff) * 12);
-            return { ...p, match: Math.round(match) };
-        }).sort((a, b) => b.match - a.match);
-
-        const list = document.getElementById("perfume-list");
-        results.slice(0, 3).forEach(r => {
-            list.innerHTML += `
-                <div class="perfume-card">
-                    <div class="match-label"><span>MATCHING RATE</span><span>${r.match}%</span></div>
-                    <div class="match-bar"><div class="match-fill" style="width: ${r.match}%"></div></div>
-                    <span class="p-name">${r.name}</span>
-                    <div class="tag-box">${r.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>
-                    <div class="reason">${r.desc}</div>
-                </div>
-            `;
-        });
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        
+        // 最終ロジック：選んだ3つのうち、嫌いと言わなかった残りの2つからランダム（または優先順）
+        const finalCandidates = selected.filter(id => id !== hatedId);
+        const result = perfumes[finalCandidates[0]]; // 最初の候補を表示
+        
+        document.getElementById('res-content').innerHTML = `
+            <img src="${result.img}" class="res-img">
+            <div class="res-name">${result.name}</div>
+            <div class="review-box">${result.quote}</div>
+        `;
+        document.getElementById('res-link').href = result.link;
     }
-
-    init();
 </script>
-
 </body>
 </html>
