@@ -36,7 +36,7 @@
       padding: 40px;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      max-width: 680px;
+      max-width: 760px;
       width: 100%;
       text-align: center;
     }
@@ -78,33 +78,59 @@
     h3 {
       font-size: 1.15rem;
       margin-bottom: 25px;
-      min-height: 3em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       color: #1a1a1a;
       line-height: 1.7;
     }
 
-    .opt-btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      margin: 10px 0;
-      border: 1px solid var(--line);
-      background: #fff;
-      cursor: pointer;
-      transition: 0.2s;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 1rem;
-      text-align: left;
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 8px;
     }
 
-    .opt-btn:hover {
-      background: #fafafa;
+    .mood-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      transition: 0.2s;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .mood-card:hover {
+      transform: translateY(-3px);
       border-color: var(--accent);
-      transform: translateX(4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .mood-visual {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: block;
+      border: none;
+    }
+
+    .mood-body {
+      padding: 12px;
+    }
+
+    .mood-title {
+      display: block;
+      font-size: 0.98rem;
+      color: #222;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .mood-sub {
+      display: block;
+      font-size: 0.83rem;
+      color: #777;
+      line-height: 1.6;
     }
 
     .res-title {
@@ -216,9 +242,13 @@
       line-height: 1.8;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 720px) {
       #app {
         padding: 24px;
+      }
+
+      .mood-grid {
+        grid-template-columns: 1fr;
       }
 
       .sub-card {
@@ -232,127 +262,87 @@
 
   <script src="data.js"></script>
   <script>
-    const QUESTION_COUNT = 15;
+    const QUESTION_COUNT = 10;
 
     const questionPool = [
       {
-        q: "🌿 理想の休日の目覚めは？",
+        q: "休日の朝、近いのは？",
         opts: [
-          { t: "窓を開けて風を通す", s: { clean: 1.0, b: 0.8, s: 0.5 } },
-          { t: "遮光カーテンの中で微睡む", s: { power: 1.0, s: 0.3, d: 0.2 } },
-          { t: "ホテルのシーツの中で朝食を", s: { luxury: 1.0, s: 0.8, f: 0.6 } }
+          { t: "白くて軽い朝", sub: "自然光・清潔感・風", color: "linear-gradient(135deg, #f7f7f2 0%, #dfeee8 100%)", s: { clean: 1.0, b: 0.8, s: 0.5 } },
+          { t: "深く静かな朝", sub: "カーテン・静寂・余白", color: "linear-gradient(135deg, #5f6672 0%, #2f3440 100%)", s: { power: 1.0, s: 0.3, d: 0.2 } },
+          { t: "上質で特別な朝", sub: "ホテル・柔らかい光・余裕", color: "linear-gradient(135deg, #eadfce 0%, #cbb79d 100%)", s: { luxury: 1.0, s: 0.8, f: 0.6 } }
         ]
       },
       {
-        q: "☕ 今、一番惹かれる飲み物は？",
+        q: "今、惹かれる飲み物は？",
         opts: [
-          { t: "淹れたてのブラックコーヒー", s: { power: 1.0, b: 0.2, f: 0.7 } },
-          { t: "お気に入りの茶葉のミルクティー", s: { luxury: 1.0, s: 0.9, b: 0.6 } },
-          { t: "冷たい炭酸水とレモン", s: { clean: 1.0, b: 0.9, d: 0.4 } }
+          { t: "ブラックコーヒー", sub: "輪郭・知性・苦み", color: "linear-gradient(135deg, #5d4636 0%, #2a1d16 100%)", s: { power: 1.0, b: 0.2, f: 0.7 } },
+          { t: "ミルクティー", sub: "やわらかさ・優雅さ", color: "linear-gradient(135deg, #e8d2b8 0%, #c89d71 100%)", s: { luxury: 1.0, s: 0.9, b: 0.6 } },
+          { t: "炭酸水とレモン", sub: "透明感・軽さ・清涼感", color: "linear-gradient(135deg, #e6fbff 0%, #c7f0d8 100%)", s: { clean: 1.0, b: 0.9, d: 0.4 } }
         ]
       },
       {
-        q: "🖼️ 部屋に飾るならどの絵？",
+        q: "惹かれる空間は？",
         opts: [
-          { t: "淡い水彩の風景画", s: { clean: 1.0, s: 0.8, u: 0.2 } },
-          { t: "モダンな抽象画", s: { power: 1.0, u: 0.9, f: 0.6 } },
-          { t: "古典的な油彩の肖像画", s: { luxury: 1.0, f: 0.9, d: 0.7 } }
+          { t: "白く静かな部屋", sub: "生成り・余白・整い", color: "linear-gradient(135deg, #fbfaf6 0%, #e9efe6 100%)", s: { clean: 1.0, b: 0.9, f: 0.3 } },
+          { t: "クラシックなラウンジ", sub: "ホテル・格・落ち着き", color: "linear-gradient(135deg, #d6c2a8 0%, #8f6d4d 100%)", s: { luxury: 1.0, f: 0.8, d: 0.7 } },
+          { t: "無機質な都会空間", sub: "洗練・硬質・モダン", color: "linear-gradient(135deg, #c7ccd4 0%, #6d7480 100%)", s: { power: 1.0, u: 0.7, f: 0.6 } }
         ]
       },
       {
-        q: "🕯️ 惹かれる灯りのトーンは？",
+        q: "惹かれる灯りは？",
         opts: [
-          { t: "朝の自然な太陽光", s: { clean: 1.0, b: 1.0 } },
-          { t: "重厚な間接照明", s: { power: 0.7, luxury: 0.3, d: 0.6 } },
-          { t: "華やかなシャンデリア", s: { luxury: 1.0, b: 0.8, d: 0.8 } }
+          { t: "朝の自然光", sub: "透明・軽やか・自然", color: "linear-gradient(135deg, #fffdf0 0%, #f4efca 100%)", s: { clean: 1.0, b: 1.0 } },
+          { t: "重厚な間接照明", sub: "深さ・陰影・静けさ", color: "linear-gradient(135deg, #7c675b 0%, #3d2e28 100%)", s: { power: 0.7, luxury: 0.3, d: 0.6 } },
+          { t: "華やかなシャンデリア", sub: "きらめき・高揚感・気品", color: "linear-gradient(135deg, #fff1c2 0%, #d7b25a 100%)", s: { luxury: 1.0, b: 0.8, d: 0.8 } }
         ]
       },
       {
-        q: "📜 大切にしたいモットーは？",
+        q: "大切にしたい空気感は？",
         opts: [
-          { t: "ありのままの自然体", s: { clean: 1.0, s: 0.9 } },
-          { t: "気高く、自分らしく", s: { luxury: 1.0, f: 0.7, u: 0.4 } },
-          { t: "静かな意志と知性", s: { power: 1.0, u: 0.7, d: 0.3 } }
+          { t: "自然体", sub: "気負わない・やさしい", color: "linear-gradient(135deg, #eef6e8 0%, #d0e4c8 100%)", s: { clean: 1.0, s: 0.9 } },
+          { t: "気品", sub: "美しさ・格・高揚感", color: "linear-gradient(135deg, #f2e4db 0%, #d1b29f 100%)", s: { luxury: 1.0, f: 0.7, u: 0.4 } },
+          { t: "静かな意志", sub: "知性・深さ・芯の強さ", color: "linear-gradient(135deg, #9399a3 0%, #4b505a 100%)", s: { power: 1.0, u: 0.7, d: 0.3 } }
         ]
       },
       {
-        q: "👠 今日の靴を選ぶなら？",
+        q: "理想の夜は？",
         opts: [
-          { t: "清潔感のある白スニーカー", s: { clean: 1.0, s: 0.6, b: 0.8 } },
-          { t: "手入れされた革靴・ヒール", s: { luxury: 0.6, power: 0.4, f: 0.9 } },
-          { t: "デザインの効いたブーツ", s: { power: 1.0, u: 0.8 } }
+          { t: "静かなテラス", sub: "風・余裕・軽やかさ", color: "linear-gradient(135deg, #dfeef4 0%, #9dc8d6 100%)", s: { luxury: 0.7, clean: 0.3, b: 0.5 } },
+          { t: "オーセンティックなバー", sub: "影・深み・都会", color: "linear-gradient(135deg, #5e4a42 0%, #231915 100%)", s: { power: 0.8, luxury: 0.2, d: 0.7 } },
+          { t: "家で映画", sub: "安心・柔らかさ・オフ", color: "linear-gradient(135deg, #f0ece7 0%, #d9d0c8 100%)", s: { clean: 0.7, s: 1.0 } }
         ]
       },
       {
-        q: "🍷 誰かと過ごす理想の夜は？",
+        q: "本棚に置きたいのは？",
         opts: [
-          { t: "静かなテラスでカクテル", s: { luxury: 0.7, clean: 0.3, b: 0.5 } },
-          { t: "オーセンティックなバー", s: { power: 0.8, luxury: 0.2, d: 0.7 } },
-          { t: "家で映画を観ながらリラックス", s: { clean: 0.7, s: 1.0 } }
+          { t: "写真集や画集", sub: "美しさ・余韻・感性", color: "linear-gradient(135deg, #f1e2d7 0%, #d5b29d 100%)", s: { luxury: 1.0, b: 0.6 } },
+          { t: "専門書や哲学書", sub: "知性・構造・深さ", color: "linear-gradient(135deg, #8d939c 0%, #525860 100%)", s: { power: 1.0, u: 0.7, f: 0.8 } },
+          { t: "温かなエッセイ", sub: "穏やか・やさしい・自然", color: "linear-gradient(135deg, #f7f4e8 0%, #dce6cd 100%)", s: { clean: 1.0, s: 0.8 } }
         ]
       },
       {
-        q: "📚 本棚にあると落ち着くのは？",
+        q: "理想の第一印象は？",
         opts: [
-          { t: "美しい写真集や画集", s: { luxury: 1.0, b: 0.6 } },
-          { t: "専門書や哲学書", s: { power: 1.0, u: 0.7, f: 0.8 } },
-          { t: "心温まるエッセイ", s: { clean: 1.0, s: 0.8 } }
+          { t: "清潔感がある", sub: "感じがいい・親しみやすい", color: "linear-gradient(135deg, #f7fbfb 0%, #d9efe8 100%)", s: { clean: 1.0, b: 0.8, s: 0.4 } },
+          { t: "上品で目を引く", sub: "華やか・美しい・整っている", color: "linear-gradient(135deg, #f6e5de 0%, #d8b09f 100%)", s: { luxury: 1.0, f: 0.7, d: 0.6 } },
+          { t: "静かに印象に残る", sub: "個性・余韻・都会的", color: "linear-gradient(135deg, #c8ccd4 0%, #666d79 100%)", s: { power: 1.0, u: 0.8, d: 0.4 } }
         ]
       },
       {
-        q: "🧥 アウターの手触りは？",
+        q: "写真の雰囲気なら？",
         opts: [
-          { t: "柔らかなカシミヤ", s: { luxury: 1.0, s: 1.0, d: 0.4 } },
-          { t: "張りのあるコットン", s: { clean: 1.0, b: 0.7, f: 0.5 } },
-          { t: "重厚なウールやレザー", s: { power: 1.0, f: 0.8, u: 0.6 } }
+          { t: "朝の光と自然な表情", sub: "透明感・素直さ", color: "linear-gradient(135deg, #fff7ec 0%, #d9f0df 100%)", s: { clean: 1.0, b: 0.9, s: 0.5 } },
+          { t: "華やかな一枚", sub: "装い・高揚感・気品", color: "linear-gradient(135deg, #f6ddd3 0%, #dfb09d 100%)", s: { luxury: 1.0, b: 0.6, f: 0.7 } },
+          { t: "影が印象的な一枚", sub: "構図・静けさ・個性", color: "linear-gradient(135deg, #858b95 0%, #313742 100%)", s: { power: 1.0, u: 0.9, d: 0.3 } }
         ]
       },
       {
-        q: "💎 アクセサリーを一つ選ぶなら？",
+        q: "旅先で惹かれるのは？",
         opts: [
-          { t: "繊細なシルバーのリング", s: { clean: 1.0, b: 0.7, d: 0.2 } },
-          { t: "存在感のあるゴールド", s: { luxury: 1.0, d: 0.8, b: 0.6 } },
-          { t: "ヴィンテージの一点物", s: { power: 1.0, u: 1.0 } }
-        ]
-      },
-      {
-        q: "🌧️ 雨の日に心地よいと感じるのは？",
-        opts: [
-          { t: "洗いたてのシャツと静かな部屋", s: { clean: 1.0, b: 0.6, s: 0.6 } },
-          { t: "重めの音楽と深いソファ", s: { power: 1.0, s: 0.4, d: 0.5 } },
-          { t: "上質な傘とクラシックな街並み", s: { luxury: 1.0, f: 0.8, d: 0.6 } }
-        ]
-      },
-      {
-        q: "🪞 理想の第一印象は？",
-        opts: [
-          { t: "清潔感があって感じがいい", s: { clean: 1.0, b: 0.8, s: 0.4 } },
-          { t: "上品で目を引く", s: { luxury: 1.0, f: 0.7, d: 0.6 } },
-          { t: "静かだけど印象に残る", s: { power: 1.0, u: 0.8, d: 0.4 } }
-        ]
-      },
-      {
-        q: "🛋️ 落ち着く空間は？",
-        opts: [
-          { t: "白や生成りを基調にした空間", s: { clean: 1.0, b: 0.9, f: 0.3 } },
-          { t: "ホテルラウンジのような空間", s: { luxury: 1.0, f: 0.8, d: 0.7 } },
-          { t: "無機質で洗練された空間", s: { power: 1.0, u: 0.7, f: 0.6 } }
-        ]
-      },
-      {
-        q: "📸 写真を撮るならどんな雰囲気が好き？",
-        opts: [
-          { t: "朝の光と自然な表情", s: { clean: 1.0, b: 0.9, s: 0.5 } },
-          { t: "ドレスアップした華やかな一枚", s: { luxury: 1.0, b: 0.6, f: 0.7 } },
-          { t: "影や構図が印象的な一枚", s: { power: 1.0, u: 0.9, d: 0.3 } }
-        ]
-      },
-      {
-        q: "🧳 旅先で惹かれるものは？",
-        opts: [
-          { t: "海風や石けんのような空気", s: { clean: 1.0, b: 0.8, d: 0.3 } },
-          { t: "格式あるホテルやアフタヌーンティー", s: { luxury: 1.0, f: 0.9, s: 0.5 } },
-          { t: "路地裏の書店や静かなバー", s: { power: 1.0, u: 0.7, d: 0.6 } }
+          { t: "海風や石けんの空気", sub: "軽さ・透明感・清涼感", color: "linear-gradient(135deg, #e4fbff 0%, #c7efd8 100%)", s: { clean: 1.0, b: 0.8, d: 0.3 } },
+          { t: "格式あるホテル", sub: "特別感・優雅さ・品格", color: "linear-gradient(135deg, #efdfcc 0%, #b9926a 100%)", s: { luxury: 1.0, f: 0.9, s: 0.5 } },
+          { t: "路地裏の書店やバー", sub: "静かな個性・深さ", color: "linear-gradient(135deg, #7a8089 0%, #40454f 100%)", s: { power: 1.0, u: 0.7, d: 0.6 } }
         ]
       }
     ];
@@ -381,11 +371,11 @@
 
     const typeDesc = {
       clean:
-        "あなたは「強く印象を残す」よりも、「近づいたときに感じる清潔感」や「空気の整った人」という印象を大切にするタイプです。今回の回答では、透明感・やわらかさ・軽やかさの傾向が強めに出ています。",
+        "あなたは「強く印象を残す」よりも、「近づいたときに感じる清潔感」や「空気の整った人」という印象を大切にするタイプです。透明感・やわらかさ・軽やかさの傾向が強めに出ています。",
       luxury:
-        "あなたは、ただ無難なだけではなく、気品や高揚感、自分を少し美しく見せてくれる空気感を求めるタイプです。今回の回答では、華やかさ・上品さ・特別感が強めに出ています。",
+        "あなたは、ただ無難なだけではなく、気品や高揚感、自分を少し美しく見せてくれる空気感を求めるタイプです。華やかさ・上品さ・特別感が強めに出ています。",
       power:
-        "あなたは、分かりやすい甘さや親しみやすさよりも、知性・静かな意志・都会的な個性に惹かれるタイプです。今回の回答では、モダンさ・輪郭のある印象・少しのクセが魅力として出ています。"
+        "あなたは、分かりやすい甘さや親しみやすさよりも、知性・静かな意志・都会的な個性に惹かれるタイプです。モダンさ・輪郭のある印象・少しのクセが魅力として出ています。"
     };
 
     let currentIdx = 0;
@@ -430,6 +420,11 @@
       render();
     }
 
+    function renderMoodVisual(opt) {
+      const color = safeText(opt.color, "linear-gradient(135deg, #eeeeee 0%, #cccccc 100%)");
+      return `<div class="mood-visual" style="background:${color};"></div>`;
+    }
+
     function render() {
       const app = document.getElementById("app");
 
@@ -454,9 +449,18 @@
           <div class="progress-text">Step ${currentIdx + 1} / ${sessionQuestions.length}</div>
           <h1>香水診断Pro</h1>
           <h3>${q.q}</h3>
-          ${q.opts.map((o, i) => `
-            <button class="opt-btn" onclick="nextQuestion(${i})">${o.t}</button>
-          `).join("")}
+
+          <div class="mood-grid">
+            ${q.opts.map((o, i) => `
+              <button class="mood-card" onclick="nextQuestion(${i})">
+                ${renderMoodVisual(o)}
+                <div class="mood-body">
+                  <span class="mood-title">${o.t}</span>
+                  <span class="mood-sub">${safeText(o.sub, "")}</span>
+                </div>
+              </button>
+            `).join("")}
+          </div>
         `;
       } else {
         showResult();
