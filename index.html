@@ -6,66 +6,59 @@
     <title>香水診断 Pro</title>
     <style>
         :root { 
-    --main-bg: #fffcf9; /* 真っ黒から「生成り」の柔らかな白へ */
-    --accent: #a89482;  /* 金から「グレージュ」系の大人色へ */
-    --text: #4a4a4a;    /* 真っ白から「チャコールグレー」へ */
-    --sub: #f3eee8;
-}
+            --main-bg: #fffcf9; /* 柔らかな生成り色 */
+            --accent: #a89482;  /* 大人っぽいグレージュ */
+            --text: #4a4a4a; 
+            --card-bg: #ffffff;
+        }
+        body { font-family: "Georgia", "游明朝", serif; background: var(--main-bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        #app { width: 100%; max-width: 400px; height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        
+        .screen { display: none; width: 100%; text-align: center; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-body { 
-    font-family: "Georgia", "游明朝", serif; /* 優雅な明朝体系へ */
-    background: var(--main-bg); 
-    color: var(--text); 
-}
+        .shelf-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin: 30px auto; }
+        .shelf-btn { background: #fff; border: 1px solid #dcdcdc; color: var(--text); padding: 18px; border-radius: 30px; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; font-size: 0.95rem; letter-spacing: 0.05em; }
+        .shelf-btn:hover { border-color: var(--accent); color: var(--accent); background: #fafafa; }
 
-/* カードのデザインを少し丸く、影を柔らかく */
-.card { 
-    background: #fff; 
-    border-radius: 20px; 
-    border: none; 
-    box-shadow: 0 15px 35px rgba(168, 148, 130, 0.15); 
-}
+        .swipe-container { position: relative; width: 280px; height: 350px; margin: 0 auto; }
+        .card { position: absolute; width: 100%; height: 100%; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 30px rgba(168, 148, 130, 0.15); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .card img { max-width: 90%; max-height: 90%; object-fit: contain; }
 
-/* ボタンを細めの線で上品に */
-.shelf-btn { 
-    border: 1px solid #dcdcdc; 
-    border-radius: 30px; 
-    background: #fff;
-    color: var(--text);
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
-}
-
-.review-btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    letter-spacing: 0.1em;
-}</style>
+        .res-img { width: 200px; height: 200px; object-fit: contain; margin-bottom: 20px; border-radius: 10px; }
+        .review-box { background: #fff; padding: 20px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.8; border-left: 4px solid var(--accent); text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        .review-btn { display: block; width: 100%; padding: 18px; background: var(--accent); color: #fff; text-decoration: none; border-radius: 30px; font-weight: bold; margin-bottom: 15px; box-sizing: border-box; text-align: center; letter-spacing: 0.1em; }
+        
+        .retry-link { display: inline-block; margin-top: 20px; color: #999; text-decoration: none; padding: 8px 20px; border: 1px solid #eee; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
+    </style>
 </head>
 <body>
 
 <div id="app">
     <div id="step0" class="screen active">
-        <h1 style="color: var(--accent); font-size: 1.4rem; letter-spacing: 0.1em;">今の気分で選ぶ</h1>
+        <h1 style="color: var(--accent); font-size: 1.3rem; letter-spacing: 0.15em; margin-bottom: 5px;">Fragrance Select</h1>
+        <p style="font-size: 0.75rem; color: #999; margin-bottom: 30px;">今の気分に寄り添う一本を</p>
         <div class="shelf-grid">
             <button class="shelf-btn" onclick="startSwipe('minimal')">清潔感・シンプル</button>
-            <button class="shelf-btn" onclick="startSwipe('luxury')">高級感・重厚</button>
-            <button class="shelf-btn" onclick="startSwipe('art')">個性的・芸術的</button>
+            <button class="shelf-btn" onclick="startSwipe('luxury')">高級感・華やか</button>
+            <button class="shelf-btn" onclick="startSwipe('art')">個性的・アーティスティック</button>
         </div>
     </div>
 
     <div id="step1" class="screen">
-        <p style="font-size: 0.85rem; color: #888; margin-bottom: 20px;">直感で「好き」なら右へ</p>
+        <p style="font-size: 0.85rem; color: #888; margin-bottom: 25px;">直感で「好き」なら右へ</p>
         <div id="card-area" class="swipe-container"></div>
-        <div style="margin-top: 35px; display: flex; gap: 40px; justify-content: center;">
-            <button onclick="swipe(false)" style="background:none; border:1px solid #444; color:#666; border-radius:50%; width:65px; height:65px; font-size:1.2rem; cursor:pointer;">✕</button>
-            <button onclick="swipe(true)" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:65px; height:65px; font-size:1.2rem; cursor:pointer;">○</button>
+        <div style="margin-top: 40px; display: flex; gap: 30px; justify-content: center;">
+            <button onclick="swipe(false)" style="background:#fff; border:1px solid #eee; color:#ccc; border-radius:50%; width:60px; height:60px; font-size:1.5rem; cursor:pointer;">✕</button>
+            <button onclick="swipe(true)" style="background:#fff; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:60px; height:60px; font-size:1.5rem; cursor:pointer;">❤︎</button>
         </div>
     </div>
 
     <div id="step2" class="screen">
-        <h2 id="q-text" style="font-size: 1.1rem; margin-bottom: 30px; letter-spacing: 0.05em;"></h2>
+        <h2 id="q-text" style="font-size: 1.1rem; margin-bottom: 35px; line-height: 1.6;"></h2>
         <div class="shelf-grid" id="q-options"></div>
     </div>
 
@@ -83,15 +76,15 @@ body {
     let questionIndex = 0;
 
     const questions = [
-        { text: "休日の理想の過ごし方は？", options: [
-            { text: "静かなカフェで読書", trait: "clean" },
-            { text: "一流ホテルのラウンジ", trait: "luxury" },
-            { text: "ジムでハードなトレーニング", trait: "power" }
+        { text: "大切にしたい時間は？", options: [
+            { text: "朝の爽やかな空気の中での読書", trait: "clean" },
+            { text: "夜、お気に入りのドレスでディナー", trait: "luxury" },
+            { text: "新しい場所への挑戦と刺激", trait: "power" }
         ]},
-        { text: "仕事におけるスタンスは？", options: [
-            { text: "効率と誠実さ", trait: "clean" },
-            { text: "品格とステータス", trait: "luxury" },
-            { text: "圧倒的な成果", trait: "power" }
+        { text: "あなたの理想の女性像は？", options: [
+            { text: "自然体で、透明感のある人", trait: "clean" },
+            { text: "凛としていて、品格のある人", trait: "luxury" },
+            { text: "個性的で、知性を感じる人", trait: "power" }
         ]}
     ];
 
@@ -103,11 +96,8 @@ body {
     function startSwipe(style) {
         currentStyle = style;
         swipeList = masterPerfumes.filter(p => p.style === style);
-        likedIds = []; // リセット
-        if (swipeList.length === 0) {
-            startQuiz();
-            return;
-        }
+        likedIds = [];
+        if (swipeList.length === 0) { startQuiz(); return; }
         renderCard();
         nextScreen('step0', 'step1');
     }
@@ -115,10 +105,7 @@ body {
     function renderCard() {
         const area = document.getElementById('card-area');
         area.innerHTML = '';
-        if (swipeList.length === 0) {
-            startQuiz();
-            return;
-        }
+        if (swipeList.length === 0) { startQuiz(); return; }
         const p = swipeList[0];
         const card = document.createElement('div');
         card.className = 'card';
@@ -130,26 +117,18 @@ body {
         if (swipeList.length === 0) return;
         const p = swipeList.shift();
         if (liked) likedIds.push(p.id);
-        
-        if (swipeList.length > 0) {
-            renderCard();
-        } else {
-            startQuiz();
-        }
+        if (swipeList.length > 0) { renderCard(); } else { startQuiz(); }
     }
 
     function startQuiz() {
         nextScreen('step1', 'step2');
-        questionIndex = 0; // リセット
-        userTraits = { clean: 0, luxury: 0, power: 0 }; // リセット
+        questionIndex = 0;
+        userTraits = { clean: 0, luxury: 0, power: 0 };
         showQuestion();
     }
 
     function showQuestion() {
-        if (questionIndex >= questions.length) {
-            showResult();
-            return;
-        }
+        if (questionIndex >= questions.length) { showResult(); return; }
         const q = questions[questionIndex];
         document.getElementById('q-text').innerText = q.text;
         const optArea = document.getElementById('q-options');
@@ -158,11 +137,7 @@ body {
             const btn = document.createElement('button');
             btn.className = 'shelf-btn';
             btn.innerText = opt.text;
-            btn.onclick = () => { 
-                userTraits[opt.trait]++; 
-                questionIndex++; 
-                showQuestion(); 
-            };
+            btn.onclick = () => { userTraits[opt.trait]++; questionIndex++; showQuestion(); };
             optArea.appendChild(btn);
         });
     }
@@ -170,20 +145,15 @@ body {
     function showResult() {
         nextScreen('step2', 'result-screen');
         let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-        
-        // 判定ロジック: 1.性格一致かつスワイプで「○」したもの 2.なければ「○」したもの 3.なければデフォルト
         let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
         if (!result) result = masterPerfumes.find(p => likedIds.includes(p.id));
         if (!result) result = masterPerfumes[0];
 
-        let reviewBtn = '';
-        if (result.review_url && result.review_url !== "") {
-            reviewBtn = `<a href="${result.review_url}" class="review-btn">レビューを見る</a>`;
-        }
+        let reviewBtn = result.review_url ? `<a href="${result.review_url}" class="review-btn">詳細を見る</a>` : '';
 
         document.getElementById('res-content').innerHTML = `
             <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.4rem; margin:0 0 15px; color:var(--accent);">${result.name}</h2>
+            <h2 style="font-size:1.3rem; margin-bottom:15px; color:#333;">${result.name}</h2>
             <div class="review-box">${result.quote}</div>
             ${reviewBtn}
             <p><a onclick="location.reload()" class="retry-link">もう一度診断する</a></p>
