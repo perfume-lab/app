@@ -3,8 +3,7 @@ const masterPerfumes = [
         id: 'nil',
         name: 'エルメス ナイルの庭',
         style: 'minimal',
-        type: 'clean',
-        img: 'images/nil.jpg', // フォルダ内の写真を参照
+        img: 'images/un-jardin-sur-le-nil-min.png',
         quote: 'グレープフルーツのような瑞々しい清潔感。誰からも愛される、水辺の記憶。',
         review_url: 'nil.html'
     },
@@ -12,8 +11,7 @@ const masterPerfumes = [
         id: 'lazy',
         name: 'マルジェラ レイジーサンデーモーニング',
         style: 'minimal',
-        type: 'clean',
-        img: 'images/lazy-sunday.jpg', 
+        img: 'images/replica-lazy-sunday-morning-min.png',
         quote: '洗い立てのシーツに包まれる日曜の朝。清潔感の正解がここに。',
         review_url: 'lazy-sunday.html'
     },
@@ -21,8 +19,7 @@ const masterPerfumes = [
         id: 'another13',
         name: 'ル ラボ アナザー 13',
         style: 'art',
-        type: 'power',
-        img: 'images/another13.jpg', 
+        img: 'images/another-13-min.png',
         quote: '肌と溶け合い発光する、中毒的なムスク。知的な色香を纏う。',
         review_url: 'another13.html'
     },
@@ -30,8 +27,7 @@ const masterPerfumes = [
         id: 'english-pear',
         name: 'ジョーマローン イングリッシュぺアー',
         style: 'luxury',
-        type: 'luxury',
-        img: 'images/english-pear.jpg', 
+        img: 'images/jomalone-english-pear-and-freesia-min.jpg',
         quote: '熟したての洋梨とフリージア。気品溢れる、英国の豊かな香り。',
         review_url: 'english-pear.html'
     },
@@ -39,8 +35,7 @@ const masterPerfumes = [
         id: 'blanche',
         name: 'バイレード ブランシュ',
         style: 'minimal',
-        type: 'clean',
-        img: 'images/blanche.jpg', 
+        img: 'images/blanche-1.jpg',
         quote: '「白」を象徴する究極の石鹸。無垢で、かつ洗練された美しさ。',
         review_url: 'blanche.html'
     },
@@ -48,8 +43,7 @@ const masterPerfumes = [
         id: 'gaiac10',
         name: 'ル ラボ ガイアック 10',
         style: 'art',
-        type: 'clean',
-        img: 'images/gaiac10.jpg', 
+        img: 'images/gaiac-10-min.png',
         quote: '東京の静寂を映すウッディ。肌に寄り添い、精神を整える香り。',
         review_url: 'gaiac10.html'
     },
@@ -57,8 +51,7 @@ const masterPerfumes = [
         id: 'imagination',
         name: 'ルイ・ヴィトン イマジナシオン',
         style: 'art',
-        type: 'luxury',
-        img: 'images/imagination.jpg', 
+        img: 'images/Imagination-min-1.png',
         quote: '至高のシトラスティーと知性の煌めき。ジェンダーを超える品格。',
         review_url: 'imagination.html'
     },
@@ -66,8 +59,7 @@ const masterPerfumes = [
         id: 'tacit',
         name: 'イソップ タシット',
         style: 'minimal',
-        type: 'clean',
-        img: 'images/tacit.jpg', 
+        img: 'images/aesop-tacit-min-2.png',
         quote: '柚子とハーブが織りなす静寂。都会で深呼吸するための香り。',
         review_url: 'tacit.html'
     },
@@ -75,8 +67,7 @@ const masterPerfumes = [
         id: 'teabreak',
         name: 'アールフレグランス ティーブレイク',
         style: 'luxury',
-        type: 'clean',
-        img: 'images/teabreak.jpg', 
+        img: 'images/r-fragrance-tea-min.jpg',
         quote: '淹れたての紅茶にお砂糖を添えて。日常を優雅な休息に変える魔法。',
         review_url: 'teabreak.html'
     },
@@ -84,8 +75,7 @@ const masterPerfumes = [
         id: 'parade',
         name: 'セリーヌ パラード',
         style: 'luxury',
-        type: 'luxury',
-        img: 'images/parade.jpg', 
+        img: 'images/celine-parade-min.jpg',
         quote: '光輝くネロリとパウダリーな余韻。凛とした「日中の正装」を纏う。',
         review_url: 'parade.html'
     }
