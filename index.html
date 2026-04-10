@@ -75,17 +75,46 @@
     let userTraits = { clean: 0, luxury: 0, power: 0 };
     let questionIndex = 0;
 
+    // 質問を4問に増やし、バリエーションを強化
     const questions = [
         { text: "大切にしたい時間は？", options: [
             { text: "朝の爽やかな空気の中での読書", trait: "clean" },
-            { text: "夜、お気に入りのドレスでディナー", trait: "luxury" },
+            { text: "夜、お気に入りのバーやディナー", trait: "luxury" },
             { text: "新しい場所への挑戦と刺激", trait: "power" }
         ]},
-        { text: "あなたの理想の女性像は？", options: [
-            { text: "自然体で、透明感のある人", trait: "clean" },
-            { text: "凛としていて、品格のある人", trait: "luxury" },
-            { text: "個性的で、知性を感じる人", trait: "power" }
+        { text: "あなたの理想のイメージは？", options: [
+            { text: "自然体で、透明感のある印象", trait: "clean" },
+            { text: "凛としていて、品格のある印象", trait: "luxury" },
+            { text: "個性的で、知性を感じる印象", trait: "power" }
+        ]},
+        { text: "惹かれる風景はどっち？", options: [
+            { text: "雨上がりの静かな森や水辺", trait: "clean" },
+            { text: "重厚なインテリアが並ぶ書斎", trait: "power" },
+            { text: "光が差し込むテラス席", trait: "luxury" }
+        ]},
+        { text: "今日の直感で選ぶなら？", options: [
+            { text: "洗い立ての白いシャツ", trait: "clean" },
+            { text: "繊細なゴールドの耳飾り", trait: "luxury" },
+            { text: "使い込まれた革のノート", trait: "power" }
         ]}
+    ];
+
+    // 結果を判定する関数（ここが重要！）
+    function getRecommendedPerfumeId() {
+        // 一番スコアが高いトレイトを探す
+        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
+
+        // トレイトごとに候補を複数用意して、その中からランダムで選ぶ
+        const candidates = {
+            clean: ['nil', 'lazy', 'blanche', 'tacit', '212'],
+            luxury: ['english-pear', 'teabreak', 'parade', 'luna', 'lost-cherry'],
+            power: ['another13', 'gaiac10', 'imagination']
+        };
+
+        const list = candidates[topTrait];
+        // リストの中からランダムに1つ抽出
+        return list[Math.floor(Math.random() * list.length)];
+    }
     ];
 
     function nextScreen(hide, show) {
