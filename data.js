@@ -78,5 +78,29 @@ const masterPerfumes = [
         img: 'images/celine-parade-min.jpg',
         quote: '光輝くネロリとパウダリーな余韻。凛とした「日中の正装」を纏う。',
         review_url: 'parade.html'
+    },
+    {
+        id: '212',
+        name: 'キャロライナ ヘレラ 212',
+        style: 'minimal',
+        img: 'images/carolina-herrera-212-women-min.png',
+        quote: '都会的でシャープな石鹸の香り。時代に流されない、知的な清潔感。',
+        review_url: '212.html'
+    },
+    {
+        id: 'lost-cherry',
+        name: 'トム フォード ロスト チェリー',
+        style: 'luxury',
+        img: 'images/tom-ford-lost-cherry-celes.jpg',
+        quote: '禁断のチェリーリキュール。甘美でスパイシーな、夜を彩る官能性。',
+        review_url: 'lost-cherry.html'
+    },
+    {
+        id: 'luna',
+        name: 'ペンハリガン ルナ',
+        style: 'luxury',
+        img: 'images/penhaligon-luna-min.jpg',
+        quote: '月光を浴びたビターオレンジとローズ。幻想的で気品あるフローラル。',
+        review_url: 'luna.html'
     }
 ];
