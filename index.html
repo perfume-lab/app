@@ -1,223 +1,642 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香水診断Pro - AI精密マッチング</title>
-    <style>
-        :root { --bg: #fdfcf9; --accent: #8e8e8e; --text: #333d32; --bar: #e0e0e0; }
-        body { font-family: "游明朝", serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        #app { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; width: 90%; text-align: center; }
-        
-        /* 進捗バー */
-        .progress-container { width: 100%; height: 4px; background: var(--bar); margin-bottom: 30px; border-radius: 2px; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.3s; }
-        
-        h3 { font-size: 1.2rem; margin-bottom: 25px; min-height: 3em; display: flex; align-items: center; justify-content: center; color: #1a1a1a; }
-        .opt-btn { display: block; width: 100%; padding: 16px; margin: 10px 0; border: 1px solid #eee; background: #fff; cursor: pointer; transition: 0.2s; border-radius: 8px; font-family: inherit; font-size: 1rem; text-align: left; }
-        .opt-btn:hover { background: #fafafa; border-color: var(--accent); transform: translateX(5px); }
-        
-        /* 結果表示 */
-        .res-title { font-size: 0.8rem; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 5px; }
-        .main-img { width: 100%; max-width: 240px; margin: 20px 0; border-radius: 10px; }
-        .type-desc { font-size: 0.9rem; background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left; line-height: 1.7; }
-        .sub-results { display: flex; justify-content: space-around; gap: 10px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
-        .sub-card { width: 45%; font-size: 0.8rem; }
-        .sub-card img { width: 100px; height: auto; border-radius: 5px; }
-        .btn-link { display: inline-block; padding: 12px 30px; background: #333; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
-        .retry-btn { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 25px; font-size: 0.8rem; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>香水診断Pro - AI精密マッチング</title>
+  <style>
+    :root {
+      --bg: #fdfcf9;
+      --accent: #8e8e8e;
+      --text: #333d32;
+      --bar: #e0e0e0;
+      --card: #ffffff;
+      --muted: #777;
+      --line: #eeeeee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    #app {
+      background: var(--card);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: var(--bar);
+      margin-bottom: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 10px 0;
+      color: #1a1a1a;
+    }
+
+    h2 {
+      font-size: 1.7rem;
+      margin: 8px 0 18px 0;
+      color: #1a1a1a;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-bottom: 25px;
+      min-height: 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+
+    .opt-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin: 10px 0;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .opt-btn:hover {
+      background: #fafafa;
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .res-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .main-img {
+      width: 100%;
+      max-width: 240px;
+      margin: 20px auto;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .type-desc {
+      font-size: 0.95rem;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: left;
+      line-height: 1.9;
+    }
+
+    .score-box {
+      font-size: 0.88rem;
+      background: #fcfcfc;
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin: 18px 0 6px 0;
+      text-align: left;
+      line-height: 1.8;
+      color: #444;
+    }
+
+    .sub-results {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 22px;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .sub-card {
+      width: 220px;
+      font-size: 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .sub-card img {
+      width: 100%;
+      max-width: 120px;
+      height: auto;
+      border-radius: 8px;
+      margin: 8px auto 10px;
+      display: block;
+    }
+
+    .quote {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #666;
+      text-align: left;
+      margin-top: 8px;
+    }
+
+    .btn-link {
+      display: inline-block;
+      padding: 12px 30px;
+      background: #333;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-link:hover {
+      opacity: 0.9;
+    }
+
+    .retry-btn {
+      background: none;
+      border: none;
+      color: #999;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 26px;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+
+    .error-box {
+      background: #fff8f8;
+      border: 1px solid #f0d6d6;
+      color: #8a4b4b;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: left;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 640px) {
+      #app {
+        padding: 24px;
+      }
+
+      .sub-card {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="app">診断を準備中...</div>
 
-<div id="app">診断を準備中...</div>
+  <script src="data.js"></script>
+  <script>
+    const QUESTION_COUNT = 15;
 
-<script src="data.js"></script>
-<script>
-/** * v1.1 ロジック設定 
- * 各回答は[Clean, Luxury, Power]のTraitと、
- * [brightness, softness, formality, uniqueness, distance]の補助軸に加点する
- */
-const questionPool = [
-    { q: "🌿 理想の休日の目覚めは？", opts: [
-        { t: "窓を開けて風を通す", s: {clean:1.0, brightness:0.8, softness:0.5} },
-        { t: "遮光カーテンの中で微睡む", s: {power:1.0, softness:0.3, distance:0.2} },
-        { t: "ホテルのシーツの中で朝食を", s: {luxury:1.0, softness:0.8, formality:0.6} }
-    ]},
-    { q: "☕ 今、一番惹かれる飲み物は？", opts: [
-        { t: "淹れたてのブラックコーヒー", s: {power:1.0, brightness:0.2, formality:0.7} },
-        { t: "お気に入りの茶葉のミルクティー", s: {luxury:1.0, softness:0.9, brightness:0.6} },
-        { t: "冷たい炭酸水とレモン", s: {clean:1.0, brightness:0.9, distance:0.4} }
-    ]},
-    { q: "🖼️ 部屋に飾るならどの絵？", opts: [
-        { t: "淡い水彩の風景画", s: {clean:1.0, softness:0.8, uniqueness:0.2} },
-        { t: "モダンな抽象画", s: {power:1.0, uniqueness:0.9, formality:0.6} },
-        { t: "古典的な油彩の肖像画", s: {luxury:1.0, formality:0.9, distance:0.7} }
-    ]},
-    { q: "🕯️ 惹かれる灯りのトーンは？", opts: [
-        { t: "朝の自然な太陽光", s: {clean:1.0, brightness:1.0} },
-        { t: "重厚な間接照明", s: {power:0.7, luxury:0.3, distance:0.6} },
-        { t: "華やかなシャンデリア", s: {luxury:1.0, brightness:0.8, distance:0.8} }
-    ]},
-    { q: "📜 大切にしたいモットーは？", opts: [
-        { t: "ありのままの自然体", s: {clean:1.0, softness:0.9} },
-        { t: "気高く、自分らしく", s: {luxury:1.0, formality:0.7, uniqueness:0.4} },
-        { t: "静かな意志と知性", s: {power:1.0, uniqueness:0.7, distance:0.3} }
-    ]},
-    { q: "👠 今日の靴を選ぶなら？", opts: [
-        { t: "清潔感のある白スニーカー", s: {clean:1.0, softness:0.6, brightness:0.8} },
-        { t: "手入れされた革靴・ヒール", s: {luxury:0.6, power:0.4, formality:0.9} },
-        { t: "デザインの効いたブーツ", s: {power:1.0, uniqueness:0.8} }
-    ]},
-    { q: "🍷 誰かと過ごす理想の夜は？", opts: [
-        { t: "静かなテラスでカクテル", s: {luxury:0.7, clean:0.3, brightness:0.5} },
-        { t: "オーセンティックなバー", s: {power:0.8, luxury:0.2, distance:0.7} },
-        { t: "家で映画を観ながらリラックス", s: {clean:0.7, softness:1.0} }
-    ]},
-    { q: "📚 本棚にあると落ち着くのは？", opts: [
-        { t: "美しい写真集や画集", s: {luxury:1.0, brightness:0.6} },
-        { t: "専門書や哲学書", s: {power:1.0, uniqueness:0.7, formality:0.8} },
-        { t: "心温まるエッセイ", s: {clean:1.0, softness:0.8} }
-    ]},
-    { q: "🧥 アウターの手触りは？", opts: [
-        { t: "柔らかなカシミヤ", s: {luxury:1.0, softness:1.0, distance:0.4} },
-        { t: "張りのあるコットン", s: {clean:1.0, brightness:0.7, formality:0.5} },
-        { t: "重厚なウールやレザー", s: {power:1.0, formality:0.8, uniqueness:0.6} }
-    ]},
-    { q: "💎 アクセサリーを一つ選ぶなら？", opts: [
-        { t: "繊細なシルバーのリング", s: {clean:1.0, brightness:0.7, distance:0.2} },
-        { t: "存在感のあるゴールド", s: {luxury:1.0, distance:0.8, brightness:0.6} },
-        { t: "ヴィンテージの一点物", s: {power:1.0, uniqueness:1.0} }
-    ]}
-    // ※ 実際はここにさらに20問ほど追加してランダム性を高めます
-];
+    const questionPool = [
+      {
+        q: "🌿 理想の休日の目覚めは？",
+        opts: [
+          { t: "窓を開けて風を通す", s: { clean: 1.0, b: 0.8, s: 0.5 } },
+          { t: "遮光カーテンの中で微睡む", s: { power: 1.0, s: 0.3, d: 0.2 } },
+          { t: "ホテルのシーツの中で朝食を", s: { luxury: 1.0, s: 0.8, f: 0.6 } }
+        ]
+      },
+      {
+        q: "☕ 今、一番惹かれる飲み物は？",
+        opts: [
+          { t: "淹れたてのブラックコーヒー", s: { power: 1.0, b: 0.2, f: 0.7 } },
+          { t: "お気に入りの茶葉のミルクティー", s: { luxury: 1.0, s: 0.9, b: 0.6 } },
+          { t: "冷たい炭酸水とレモン", s: { clean: 1.0, b: 0.9, d: 0.4 } }
+        ]
+      },
+      {
+        q: "🖼️ 部屋に飾るならどの絵？",
+        opts: [
+          { t: "淡い水彩の風景画", s: { clean: 1.0, s: 0.8, u: 0.2 } },
+          { t: "モダンな抽象画", s: { power: 1.0, u: 0.9, f: 0.6 } },
+          { t: "古典的な油彩の肖像画", s: { luxury: 1.0, f: 0.9, d: 0.7 } }
+        ]
+      },
+      {
+        q: "🕯️ 惹かれる灯りのトーンは？",
+        opts: [
+          { t: "朝の自然な太陽光", s: { clean: 1.0, b: 1.0 } },
+          { t: "重厚な間接照明", s: { power: 0.7, luxury: 0.3, d: 0.6 } },
+          { t: "華やかなシャンデリア", s: { luxury: 1.0, b: 0.8, d: 0.8 } }
+        ]
+      },
+      {
+        q: "📜 大切にしたいモットーは？",
+        opts: [
+          { t: "ありのままの自然体", s: { clean: 1.0, s: 0.9 } },
+          { t: "気高く、自分らしく", s: { luxury: 1.0, f: 0.7, u: 0.4 } },
+          { t: "静かな意志と知性", s: { power: 1.0, u: 0.7, d: 0.3 } }
+        ]
+      },
+      {
+        q: "👠 今日の靴を選ぶなら？",
+        opts: [
+          { t: "清潔感のある白スニーカー", s: { clean: 1.0, s: 0.6, b: 0.8 } },
+          { t: "手入れされた革靴・ヒール", s: { luxury: 0.6, power: 0.4, f: 0.9 } },
+          { t: "デザインの効いたブーツ", s: { power: 1.0, u: 0.8 } }
+        ]
+      },
+      {
+        q: "🍷 誰かと過ごす理想の夜は？",
+        opts: [
+          { t: "静かなテラスでカクテル", s: { luxury: 0.7, clean: 0.3, b: 0.5 } },
+          { t: "オーセンティックなバー", s: { power: 0.8, luxury: 0.2, d: 0.7 } },
+          { t: "家で映画を観ながらリラックス", s: { clean: 0.7, s: 1.0 } }
+        ]
+      },
+      {
+        q: "📚 本棚にあると落ち着くのは？",
+        opts: [
+          { t: "美しい写真集や画集", s: { luxury: 1.0, b: 0.6 } },
+          { t: "専門書や哲学書", s: { power: 1.0, u: 0.7, f: 0.8 } },
+          { t: "心温まるエッセイ", s: { clean: 1.0, s: 0.8 } }
+        ]
+      },
+      {
+        q: "🧥 アウターの手触りは？",
+        opts: [
+          { t: "柔らかなカシミヤ", s: { luxury: 1.0, s: 1.0, d: 0.4 } },
+          { t: "張りのあるコットン", s: { clean: 1.0, b: 0.7, f: 0.5 } },
+          { t: "重厚なウールやレザー", s: { power: 1.0, f: 0.8, u: 0.6 } }
+        ]
+      },
+      {
+        q: "💎 アクセサリーを一つ選ぶなら？",
+        opts: [
+          { t: "繊細なシルバーのリング", s: { clean: 1.0, b: 0.7, d: 0.2 } },
+          { t: "存在感のあるゴールド", s: { luxury: 1.0, d: 0.8, b: 0.6 } },
+          { t: "ヴィンテージの一点物", s: { power: 1.0, u: 1.0 } }
+        ]
+      },
+      {
+        q: "🌧️ 雨の日に心地よいと感じるのは？",
+        opts: [
+          { t: "洗いたてのシャツと静かな部屋", s: { clean: 1.0, b: 0.6, s: 0.6 } },
+          { t: "重めの音楽と深いソファ", s: { power: 1.0, s: 0.4, d: 0.5 } },
+          { t: "上質な傘とクラシックな街並み", s: { luxury: 1.0, f: 0.8, d: 0.6 } }
+        ]
+      },
+      {
+        q: "🪞 理想の第一印象は？",
+        opts: [
+          { t: "清潔感があって感じがいい", s: { clean: 1.0, b: 0.8, s: 0.4 } },
+          { t: "上品で目を引く", s: { luxury: 1.0, f: 0.7, d: 0.6 } },
+          { t: "静かだけど印象に残る", s: { power: 1.0, u: 0.8, d: 0.4 } }
+        ]
+      },
+      {
+        q: "🛋️ 落ち着く空間は？",
+        opts: [
+          { t: "白や生成りを基調にした空間", s: { clean: 1.0, b: 0.9, f: 0.3 } },
+          { t: "ホテルラウンジのような空間", s: { luxury: 1.0, f: 0.8, d: 0.7 } },
+          { t: "無機質で洗練された空間", s: { power: 1.0, u: 0.7, f: 0.6 } }
+        ]
+      },
+      {
+        q: "📸 写真を撮るならどんな雰囲気が好き？",
+        opts: [
+          { t: "朝の光と自然な表情", s: { clean: 1.0, b: 0.9, s: 0.5 } },
+          { t: "ドレスアップした華やかな一枚", s: { luxury: 1.0, b: 0.6, f: 0.7 } },
+          { t: "影や構図が印象的な一枚", s: { power: 1.0, u: 0.9, d: 0.3 } }
+        ]
+      },
+      {
+        q: "🧳 旅先で惹かれるものは？",
+        opts: [
+          { t: "海風や石けんのような空気", s: { clean: 1.0, b: 0.8, d: 0.3 } },
+          { t: "格式あるホテルやアフタヌーンティー", s: { luxury: 1.0, f: 0.9, s: 0.5 } },
+          { t: "路地裏の書店や静かなバー", s: { power: 1.0, u: 0.7, d: 0.6 } }
+        ]
+      }
+    ];
 
-// 香水側の補助軸データ（マッチング用）
-const perfumeMetrics = {
-    nil: {b:0.9, s:0.6, f:0.4, u:0.2, d:0.5},
-    lazy: {b:0.8, s:0.9, f:0.2, u:0.3, d:0.4},
-    blanche: {b:1.0, s:0.7, f:0.5, u:0.2, d:0.6},
-    tacit: {b:0.6, s:0.4, f:0.7, u:0.6, d:0.4},
-    '212': {b:0.7, s:0.3, f:0.8, u:0.4, d:0.6},
-    'english-pear': {b:0.8, s:0.7, f:0.6, u:0.3, d:0.5},
-    teabreak: {b:0.7, s:0.9, f:0.4, u:0.4, d:0.4},
-    parade: {b:0.6, s:0.5, f:0.9, u:0.5, d:0.7},
-    luna: {b:0.5, s:0.6, f:0.7, u:0.6, d:0.5},
-    'lost-cherry': {b:0.2, s:0.4, f:0.8, u:0.9, d:0.9},
-    another13: {b:0.4, s:0.5, f:0.4, u:1.0, d:0.6},
-    gaiac10: {b:0.3, s:0.6, f:0.6, u:0.8, d:0.3},
-    imagination: {b:0.7, s:0.4, f:0.7, u:0.7, d:0.6}
-};
-
-let currentIdx = 0;
-let userScores = { clean:0, luxury:0, power:0, b:0, s:0, f:0, u:0, d:0 };
-let sessionQuestions = [];
-
-window.onload = () => {
-    // プールから10問(今回は例として10問)を抽出してシャッフル
-    sessionQuestions = questionPool.sort(() => Math.random() - 0.5).slice(0, 10);
-    render();
-};
-
-function render() {
-    const app = document.getElementById('app');
-    const progress = (currentIdx / sessionQuestions.length) * 100;
-    
-    if (currentIdx < sessionQuestions.length) {
-        const q = sessionQuestions[currentIdx];
-        app.innerHTML = `
-            <div class="progress-container"><div id="progress-bar" style="width:${progress}%"></div></div>
-            <div class="progress">Step ${currentIdx + 1} / ${sessionQuestions.length}</div>
-            <h3>${q.q}</h3>
-            ${q.opts.map((o, i) => `<button class="opt-btn" onclick="next(${i})">${o.t}</button>`).join('')}
-        `;
-    } else {
-        showResult();
-    }
-}
-
-function next(optIdx) {
-    const scores = sessionQuestions[currentIdx].opts[optIdx].s;
-    for (let key in scores) { userScores[key] += scores[key]; }
-    currentIdx++;
-    render();
-}
-
-function showResult() {
-    const app = document.getElementById('app');
-    
-    // 主属性決定
-    const trait = ['clean', 'luxury', 'power'].reduce((a, b) => userScores[a] > userScores[b] ? a : b);
-    
-    // 補助軸の平均化
-    const userV = {
-        b: userScores.b / currentIdx,
-        s: userScores.s / currentIdx,
-        f: userScores.f / currentIdx,
-        u: userScores.u / currentIdx,
-        d: userScores.d / currentIdx
+    const perfumeMetrics = {
+      nil:            { b: 0.9, s: 0.6, f: 0.4, u: 0.2, d: 0.5 },
+      lazy:           { b: 0.8, s: 0.9, f: 0.2, u: 0.3, d: 0.4 },
+      blanche:        { b: 1.0, s: 0.7, f: 0.5, u: 0.2, d: 0.6 },
+      tacit:          { b: 0.6, s: 0.4, f: 0.7, u: 0.6, d: 0.4 },
+      "212":          { b: 0.7, s: 0.3, f: 0.8, u: 0.4, d: 0.6 },
+      "english-pear": { b: 0.8, s: 0.7, f: 0.6, u: 0.3, d: 0.5 },
+      teabreak:       { b: 0.7, s: 0.9, f: 0.4, u: 0.4, d: 0.4 },
+      parade:         { b: 0.6, s: 0.5, f: 0.9, u: 0.5, d: 0.7 },
+      luna:           { b: 0.5, s: 0.6, f: 0.7, u: 0.6, d: 0.5 },
+      "lost-cherry":  { b: 0.2, s: 0.4, f: 0.8, u: 0.9, d: 0.9 },
+      another13:      { b: 0.4, s: 0.5, f: 0.4, u: 1.0, d: 0.6 },
+      gaiac10:        { b: 0.3, s: 0.6, f: 0.6, u: 0.8, d: 0.3 },
+      imagination:    { b: 0.7, s: 0.4, f: 0.7, u: 0.7, d: 0.6 }
     };
 
-    // 候補をTraitで絞り、補助軸の距離（ユークリッド距離）でソート
-    const candidates = masterPerfumes.filter(p => {
-        // IDによってTraitを割り振り
-        const map = {
-            clean: ['nil', 'lazy', 'blanche', 'tacit', '212'],
-            luxury: ['english-pear', 'teabreak', 'parade', 'luna', 'lost-cherry'],
-            power: ['another13', 'gaiac10', 'imagination']
-        };
-        return map[trait].includes(p.id);
-    });
-
-    const sorted = candidates.map(p => {
-        const pv = perfumeMetrics[p.id];
-        const dist = Math.sqrt(
-            Math.pow(userV.b - pv.b, 2) + Math.pow(userV.s - pv.s, 2) +
-            Math.pow(userV.f - pv.f, 2) + Math.pow(userV.u - pv.u, 2) + Math.pow(userV.d - pv.d, 2)
-        );
-        return { ...p, dist };
-    }).sort((a, b) => a.dist - b.dist);
-
-    const best = sorted[0];
-    const sub1 = sorted[1];
-    const sub2 = sorted[2];
+    const traitMap = {
+      clean: ["nil", "lazy", "blanche", "tacit", "212"],
+      luxury: ["english-pear", "teabreak", "parade", "luna", "lost-cherry"],
+      power: ["another13", "gaiac10", "imagination"]
+    };
 
     const typeDesc = {
-        clean: "あなたは「強く印象を残す」よりも、「近づいたときに感じる清潔感」や「空気の整った人」という印象を大切にするタイプです。今回の回答では、透明感や柔らかさのスコアが高く出ました。",
-        luxury: "あなたは、ただ無難なだけではなく、気品や高揚感、自分を少し美しく見せてくれる空気感を求めるタイプです。今回の回答では、華やかさや特別感のスコアが強く出ました。",
-        power: "あなたは、分かりやすい甘さや親しみやすさよりも、知性・静かな意志・都会的な個性に惹かれるタイプです。今回の回答では、モダンさや一癖ある印象が高く出ました。"
+      clean:
+        "あなたは「強く印象を残す」よりも、「近づいたときに感じる清潔感」や「空気の整った人」という印象を大切にするタイプです。今回の回答では、透明感・やわらかさ・軽やかさの傾向が強めに出ています。",
+      luxury:
+        "あなたは、ただ無難なだけではなく、気品や高揚感、自分を少し美しく見せてくれる空気感を求めるタイプです。今回の回答では、華やかさ・上品さ・特別感が強めに出ています。",
+      power:
+        "あなたは、分かりやすい甘さや親しみやすさよりも、知性・静かな意志・都会的な個性に惹かれるタイプです。今回の回答では、モダンさ・輪郭のある印象・少しのクセが魅力として出ています。"
     };
 
-    app.innerHTML = `
-        <div class="result-card">
-            <div class="res-title">PERFECT MATCH</div>
-            <h2 style="margin:5px 0 20px 0;">${best.name}</h2>
-            <img src="${best.img}" class="main-img">
-            <div class="type-desc">
-                <strong>診断結果：${trait.toUpperCase()} タイプ</strong><br><br>
-                ${typeDesc[trait]}<br><br>
-                その中でも、あなたの補助軸スコアに最も近い「${best.name}」を本命として選出しました。
-            </div>
-            <a href="${best.review_url}" class="btn-link">詳細・分析データを読む</a>
-            
-            <div class="sub-results">
-                <div class="sub-card">
-                    <p style="color:#999; font-size:0.7rem;">OTHER OPTION 01</p>
-                    <img src="${sub1.img}">
-                    <p><strong>${sub1.name}</strong></p>
-                    <a href="${sub1.review_url}" style="color:#333; text-decoration:none;">→詳細</a>
-                </div>
-                <div class="sub-card">
-                    <p style="color:#999; font-size:0.7rem;">OTHER OPTION 02</p>
-                    <img src="${sub2.img}">
-                    <p><strong>${sub2.name}</strong></p>
-                    <a href="${sub2.review_url}" style="color:#333; text-decoration:none;">→詳細</a>
-                </div>
-            </div>
-            <button class="retry-btn" onclick="location.reload()">別の質問で再診断する</button>
+    let currentIdx = 0;
+    let sessionQuestions = [];
+    let userScores = {};
+
+    function resetScores() {
+      userScores = {
+        clean: 0,
+        luxury: 0,
+        power: 0,
+        b: 0,
+        s: 0,
+        f: 0,
+        u: 0,
+        d: 0
+      };
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function safeText(value, fallback = "") {
+      return typeof value === "string" && value.trim() ? value : fallback;
+    }
+
+    function safeUrl(value, fallback = "#") {
+      return typeof value === "string" && value.trim() ? value : fallback;
+    }
+
+    function startDiagnosis() {
+      resetScores();
+      currentIdx = 0;
+      const pickCount = Math.min(QUESTION_COUNT, questionPool.length);
+      sessionQuestions = shuffle(questionPool).slice(0, pickCount);
+      render();
+    }
+
+    function render() {
+      const app = document.getElementById("app");
+
+      if (!sessionQuestions.length) {
+        app.innerHTML = `
+          <h1>香水診断Pro</h1>
+          <div class="error-box">
+            質問データが見つかりません。questionPool を確認してください。
+          </div>
+        `;
+        return;
+      }
+
+      const progress = Math.min((currentIdx / sessionQuestions.length) * 100, 100);
+
+      if (currentIdx < sessionQuestions.length) {
+        const q = sessionQuestions[currentIdx];
+        app.innerHTML = `
+          <div class="progress-container">
+            <div id="progress-bar" style="width:${progress}%"></div>
+          </div>
+          <div class="progress-text">Step ${currentIdx + 1} / ${sessionQuestions.length}</div>
+          <h1>香水診断Pro</h1>
+          <h3>${q.q}</h3>
+          ${q.opts.map((o, i) => `
+            <button class="opt-btn" onclick="nextQuestion(${i})">${o.t}</button>
+          `).join("")}
+        `;
+      } else {
+        showResult();
+      }
+    }
+
+    function nextQuestion(optIdx) {
+      const selected = sessionQuestions[currentIdx]?.opts?.[optIdx];
+      if (!selected || !selected.s) return;
+
+      const scores = selected.s;
+      for (const key in scores) {
+        if (Object.prototype.hasOwnProperty.call(userScores, key)) {
+          userScores[key] += scores[key];
+        }
+      }
+
+      currentIdx++;
+      render();
+    }
+
+    function getDominantTrait() {
+      const traits = ["clean", "luxury", "power"];
+      let bestTrait = traits[0];
+
+      for (let i = 1; i < traits.length; i++) {
+        if (userScores[traits[i]] > userScores[bestTrait]) {
+          bestTrait = traits[i];
+        }
+      }
+      return bestTrait;
+    }
+
+    function getUserVector(answerCount) {
+      const divisor = Math.max(answerCount, 1);
+      return {
+        b: userScores.b / divisor,
+        s: userScores.s / divisor,
+        f: userScores.f / divisor,
+        u: userScores.u / divisor,
+        d: userScores.d / divisor
+      };
+    }
+
+    function calcDistance(a, b) {
+      return Math.sqrt(
+        Math.pow(a.b - b.b, 2) +
+        Math.pow(a.s - b.s, 2) +
+        Math.pow(a.f - b.f, 2) +
+        Math.pow(a.u - b.u, 2) +
+        Math.pow(a.d - b.d, 2)
+      );
+    }
+
+    function getCandidatesByTrait(trait) {
+      if (!Array.isArray(window.masterPerfumes)) return [];
+      const allowedIds = traitMap[trait] || [];
+      return window.masterPerfumes.filter(p => allowedIds.includes(p.id));
+    }
+
+    function renderImage(img, alt) {
+      const safeImg = safeText(img, "");
+      if (!safeImg) return "";
+      return `<img src="${safeImg}" alt="${alt}" class="main-img" onerror="this.style.display='none'">`;
+    }
+
+    function renderSmallImage(img, alt) {
+      const safeImg = safeText(img, "");
+      if (!safeImg) return "";
+      return `<img src="${safeImg}" alt="${alt}" onerror="this.style.display='none'">`;
+    }
+
+    function renderSubCard(item, label) {
+      if (!item) return "";
+
+      const name = safeText(item.name, "候補データ");
+      const reviewUrl = safeUrl(item.review_url, "#");
+      const quote = safeText(item.quote, "");
+
+      return `
+        <div class="sub-card">
+          <p style="color:#999; font-size:0.72rem;">${label}</p>
+          ${renderSmallImage(item.img, name)}
+          <p><strong>${name}</strong></p>
+          ${quote ? `<div class="quote">${quote}</div>` : ""}
+          ${reviewUrl !== "#" ? `<a href="${reviewUrl}" style="color:#333; text-decoration:none;">→ 詳細</a>` : ""}
         </div>
-    `;
-}
-</script>
+      `;
+    }
+
+    function showResult() {
+      const app = document.getElementById("app");
+
+      if (!Array.isArray(window.masterPerfumes)) {
+        app.innerHTML = `
+          <h1>香水診断Pro</h1>
+          <div class="error-box">
+            data.js の masterPerfumes が見つかりません。読み込みを確認してください。
+          </div>
+          <button class="retry-btn" onclick="startDiagnosis()">もう一度診断する</button>
+        `;
+        return;
+      }
+
+      const trait = getDominantTrait();
+      const userV = getUserVector(currentIdx);
+      const candidates = getCandidatesByTrait(trait);
+
+      if (!candidates.length) {
+        app.innerHTML = `
+          <h1>香水診断Pro</h1>
+          <div class="error-box">
+            診断候補が見つかりませんでした。data.js 内の id を確認してください。
+          </div>
+          <button class="retry-btn" onclick="startDiagnosis()">もう一度診断する</button>
+        `;
+        return;
+      }
+
+      const ranked = candidates
+        .map(p => {
+          const metric = perfumeMetrics[p.id];
+          const dist = metric ? calcDistance(userV, metric) : 999;
+          return { ...p, dist };
+        })
+        .sort((a, b) => a.dist - b.dist);
+
+      const best = ranked[0] || null;
+      const sub1 = ranked[1] || null;
+      const sub2 = ranked[2] || null;
+
+      const traitLabelMap = {
+        clean: "CLEAN",
+        luxury: "LUXURY",
+        power: "POWER"
+      };
+
+      const bestName = safeText(best?.name, "おすすめ香水");
+      const bestReviewUrl = safeUrl(best?.review_url, "#");
+      const bestQuote = safeText(best?.quote, "");
+
+      app.innerHTML = `
+        <div class="result-card">
+          <div class="res-title">PERFECT MATCH</div>
+          <h2>${bestName}</h2>
+
+          ${renderImage(best?.img, bestName)}
+
+          <div class="type-desc">
+            <strong>診断結果：${traitLabelMap[trait] || trait.toUpperCase()} タイプ</strong><br><br>
+            ${typeDesc[trait] || ""}<br><br>
+            ${bestQuote ? `今回の本命は「${bestName}」。<br>“${bestQuote}”` : `今回の本命は「${bestName}」です。`}
+          </div>
+
+          <div class="score-box">
+            <strong>補助軸の傾向</strong><br>
+            明るさ: ${userV.b.toFixed(2)} / やわらかさ: ${userV.s.toFixed(2)} / フォーマル感: ${userV.f.toFixed(2)}<br>
+            個性: ${userV.u.toFixed(2)} / 距離感: ${userV.d.toFixed(2)}
+          </div>
+
+          ${bestReviewUrl !== "#" ? `<a href="${bestReviewUrl}" class="btn-link">詳細・分析データを読む</a>` : ""}
+
+          ${(sub1 || sub2) ? `
+            <div class="sub-results">
+              ${renderSubCard(sub1, "OTHER OPTION 01")}
+              ${renderSubCard(sub2, "OTHER OPTION 02")}
+            </div>
+          ` : ""}
+
+          <button class="retry-btn" onclick="startDiagnosis()">別の質問で再診断する</button>
+        </div>
+      `;
+    }
+
+    window.startDiagnosis = startDiagnosis;
+    window.nextQuestion = nextQuestion;
+
+    window.onload = () => {
+      startDiagnosis();
+    };
+  </script>
 </body>
 </html>
