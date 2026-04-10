@@ -5,30 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>香水診断 Pro</title>
     <style>
-        :root { --main-bg: #0a0a0a; --accent: #d4af37; --text: #e0e0e0; }
-        body { font-family: "Helvetica Neue", Arial, sans-serif; background: var(--main-bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        
-        #app { width: 100%; max-width: 400px; height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-        
-        .screen { display: none; width: 100%; text-align: center; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { 
+    --main-bg: #fffcf9; /* 真っ黒から「生成り」の柔らかな白へ */
+    --accent: #a89482;  /* 金から「グレージュ」系の大人色へ */
+    --text: #4a4a4a;    /* 真っ白から「チャコールグレー」へ */
+    --sub: #f3eee8;
+}
 
-        .shelf-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin: 30px auto; }
-        .shelf-btn { background: transparent; border: 1px solid #444; color: var(--text); padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; font-size: 1rem; }
-        .shelf-btn:hover { border-color: var(--accent); color: var(--accent); }
+body { 
+    font-family: "Georgia", "游明朝", serif; /* 優雅な明朝体系へ */
+    background: var(--main-bg); 
+    color: var(--text); 
+}
 
-        .swipe-container { position: relative; width: 300px; height: 380px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
-        .card { position: absolute; width: 100%; height: 100%; background: #151515; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; border: 1px solid #222; }
-        .card img { max-width: 100%; max-height: 320px; object-fit: contain; }
+/* カードのデザインを少し丸く、影を柔らかく */
+.card { 
+    background: #fff; 
+    border-radius: 20px; 
+    border: none; 
+    box-shadow: 0 15px 35px rgba(168, 148, 130, 0.15); 
+}
 
-        .res-img { width: 100%; max-width: 240px; border-radius: 8px; margin-bottom: 20px; }
-        .review-box { background: #151515; padding: 18px; border-radius: 8px; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.7; border-left: 3px solid var(--accent); text-align: left; }
-        
-        .review-btn { display: block; width: 100%; padding: 18px; background: transparent; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; border-radius: 30px; font-weight: bold; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
-        
-        .retry-link { display: inline-block; margin-top: 30px; color: #666; text-decoration: none; padding: 8px 20px; border: 1px solid #222; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
-    </style>
+/* ボタンを細めの線で上品に */
+.shelf-btn { 
+    border: 1px solid #dcdcdc; 
+    border-radius: 30px; 
+    background: #fff;
+    color: var(--text);
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+}
+
+.review-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    letter-spacing: 0.1em;
+}</style>
 </head>
 <body>
 
