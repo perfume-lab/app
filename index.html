@@ -512,10 +512,11 @@
     }
 
     function getCandidatesByTrait(trait) {
-  if (typeof masterPerfumes === "undefined" || !Array.isArray(masterPerfumes)) return [];
-  const allowedIds = traitMap[trait] || [];
-  return masterPerfumes.filter(p => allowedIds.includes(p.id));
-}
+      if (typeof masterPerfumes === "undefined" || !Array.isArray(masterPerfumes)) return [];
+      const allowedIds = traitMap[trait] || [];
+      return masterPerfumes.filter(p => allowedIds.includes(p.id));
+    }
+
     function renderImage(img, alt) {
       const safeImg = safeText(img, "");
       if (!safeImg) return "";
@@ -549,7 +550,7 @@
     function showResult() {
       const app = document.getElementById("app");
 
-      if (!Array.isArray(window.masterPerfumes)) {
+      if (typeof masterPerfumes === "undefined" || !Array.isArray(masterPerfumes)) {
         app.innerHTML = `
           <h1>香水診断Pro</h1>
           <div class="error-box">
