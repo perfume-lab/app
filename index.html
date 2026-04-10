@@ -75,7 +75,7 @@
     let userTraits = { clean: 0, luxury: 0, power: 0 };
     let questionIndex = 0;
 
-    // 質問を4問に増やし、バリエーションを強化
+    // 質問を4問に拡張
     const questions = [
         { text: "大切にしたい時間は？", options: [
             { text: "朝の爽やかな空気の中での読書", trait: "clean" },
@@ -99,12 +99,38 @@
         ]}
     ];
 
-    // 結果を判定する関数（ここが重要！）
+    // ページ読み込み時に最初の質問を表示
+    window.onload = function() {
+        showQuestion();
+    };
+
+    function showQuestion() {
+        const container = document.getElementById('question-container');
+        if (!container) return;
+
+        if (questionIndex < questions.length) {
+            const q = questions[questionIndex];
+            let html = `<h3>${q.text}</h3>`;
+            q.options.forEach((opt, i) => {
+                html += `<button class="opt-btn" onclick="answerQuestion('${opt.trait}')">${opt.text}</button>`;
+            });
+            container.innerHTML = html;
+        } else {
+            showResult();
+        }
+    }
+
+    function answerQuestion(trait) {
+        userTraits[trait]++;
+        questionIndex++;
+        showQuestion();
+    }
+
     function getRecommendedPerfumeId() {
-        // 一番スコアが高いトレイトを探す
+        // 一番スコアが高いタイプを決定
         let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
 
-        // トレイトごとに候補を複数用意して、その中からランダムで選ぶ
+        // 各タイプごとの候補リスト（13種類すべてを分類）
         const candidates = {
             clean: ['nil', 'lazy', 'blanche', 'tacit', '212'],
             luxury: ['english-pear', 'teabreak', 'parade', 'luna', 'lost-cherry'],
@@ -112,81 +138,27 @@
         };
 
         const list = candidates[topTrait];
-        // リストの中からランダムに1つ抽出
+        // 候補の中からランダムに1つ選ぶ
         return list[Math.floor(Math.random() * list.length)];
-    }
-    ];
-
-    function nextScreen(hide, show) {
-        document.getElementById(hide).classList.remove('active');
-        document.getElementById(show).classList.add('active');
-    }
-
-    function startSwipe(style) {
-        currentStyle = style;
-        swipeList = masterPerfumes.filter(p => p.style === style);
-        likedIds = [];
-        if (swipeList.length === 0) { startQuiz(); return; }
-        renderCard();
-        nextScreen('step0', 'step1');
-    }
-
-    function renderCard() {
-        const area = document.getElementById('card-area');
-        area.innerHTML = '';
-        if (swipeList.length === 0) { startQuiz(); return; }
-        const p = swipeList[0];
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<img src="${p.img}">`;
-        area.appendChild(card);
-    }
-
-    function swipe(liked) {
-        if (swipeList.length === 0) return;
-        const p = swipeList.shift();
-        if (liked) likedIds.push(p.id);
-        if (swipeList.length > 0) { renderCard(); } else { startQuiz(); }
-    }
-
-    function startQuiz() {
-        nextScreen('step1', 'step2');
-        questionIndex = 0;
-        userTraits = { clean: 0, luxury: 0, power: 0 };
-        showQuestion();
-    }
-
-    function showQuestion() {
-        if (questionIndex >= questions.length) { showResult(); return; }
-        const q = questions[questionIndex];
-        document.getElementById('q-text').innerText = q.text;
-        const optArea = document.getElementById('q-options');
-        optArea.innerHTML = '';
-        q.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'shelf-btn';
-            btn.innerText = opt.text;
-            btn.onclick = () => { userTraits[opt.trait]++; questionIndex++; showQuestion(); };
-            optArea.appendChild(btn);
-        });
     }
 
     function showResult() {
-        nextScreen('step2', 'result-screen');
-        let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-        let result = masterPerfumes.find(p => likedIds.includes(p.id) && p.type === topTrait);
-        if (!result) result = masterPerfumes.find(p => likedIds.includes(p.id));
-        if (!result) result = masterPerfumes[0];
+        const perfumeId = getRecommendedPerfumeId();
+        const perfume = masterPerfumes.find(p => p.id === perfumeId);
+        const container = document.getElementById('question-container');
 
-        let reviewBtn = result.review_url ? `<a href="${result.review_url}" class="review-btn">詳細を見る</a>` : '';
-
-        document.getElementById('res-content').innerHTML = `
-            <img src="${result.img}" class="res-img">
-            <h2 style="font-size:1.3rem; margin-bottom:15px; color:#333;">${result.name}</h2>
-            <div class="review-box">${result.quote}</div>
-            ${reviewBtn}
-            <p><a onclick="location.reload()" class="retry-link">もう一度診断する</a></p>
-        `;
+        if (perfume) {
+            container.innerHTML = `
+                <div class="result-card">
+                    <h2>あなたにぴったりの香りは...</h2>
+                    <img src="${perfume.img}" alt="${perfume.name}" style="width:100%; max-width:300px; border-radius:10px;">
+                    <h3>${perfume.name}</h3>
+                    <p class="quote">"${perfume.quote}"</p>
+                    <a href="${perfume.review_url}" class="detail-btn">この香りを詳しく見る</a>
+                    <button class="retry-btn" onclick="location.reload()">もう一度診断する</button>
+                </div>
+            `;
+        }
     }
 </script>
 </body>
