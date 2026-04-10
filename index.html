@@ -512,7 +512,7 @@
     }
 
     function getCandidatesByTrait(trait) {
-      if (!Array.isArray(window.masterPerfumes)) return [];
+      if (typeof masterPerfumes === "undefined" || !Array.isArray(masterPerfumes)) return [];
       const allowedIds = traitMap[trait] || [];
       return window.masterPerfumes.filter(p => allowedIds.includes(p.id));
     }
