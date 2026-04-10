@@ -3,173 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香水診断Pro - あなたにぴったりの香り</title>
+    <title>香水診断Pro - AI徹底分析</title>
     <style>
-        :root {
-            --main-bg: #fdfcf9;
-            --accent: #8e8e8e;
-            --text: #333d32;
-        }
-        body {
-            font-family: "游明朝", serif;
-            background-color: var(--main-bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            line-height: 1.8;
-        }
-        #question-container {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-        }
-        h3 { font-size: 1.2rem; margin-bottom: 30px; }
-        .opt-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid #e0e0e0;
-            background: #fff;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 5px;
-            font-family: inherit;
-        }
-        .opt-btn:hover {
-            background: #f5f5f5;
-            border-color: #8e8e8e;
-        }
-        .result-card img {
-            width: 100%;
-            max-width: 250px;
-            height: auto;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .quote { font-style: italic; color: #666; margin: 20px 0; font-size: 0.9rem; }
-        .detail-btn, .retry-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px 5px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .detail-btn { background: #333; color: #fff; }
-        .retry-btn { background: #eee; color: #333; border: none; cursor: pointer; }
-        .detail-btn:hover { opacity: 0.8; }
+        :root { --main-bg: #fdfcf9; --accent: #8e8e8e; --text: #333d32; }
+        body { font-family: "游明朝", serif; background-color: var(--main-bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        #question-container { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; width: 90%; text-align: center; }
+        .progress { font-size: 0.8rem; color: #999; margin-bottom: 10px; }
+        h3 { font-size: 1.1rem; margin-bottom: 25px; min-height: 3em; display: flex; align-items: center; justify-content: center; }
+        .opt-btn { display: block; width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #eee; background: #fff; cursor: pointer; transition: 0.2s; border-radius: 5px; font-family: inherit; font-size: 0.95rem; }
+        .opt-btn:hover { background: #fafafa; border-color: var(--accent); }
+        .result-card img { width: 100%; max-width: 220px; border-radius: 10px; margin: 15px 0; }
+        .detail-btn { display: inline-block; padding: 12px 25px; background: #333; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
+        .retry-btn { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; display: block; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div id="question-container">
-        <p>診断を読み込み中...</p>
-    </div>
+<div id="question-container">読み込み中...</div>
 
-    <script src="data.js"></script>
+<script src="data.js"></script>
+<script>
+    // 30個の質問プール（毎回ここからランダムに選ばれる）
+    const questionPool = [
+        { q: "朝、一番に飲みたいものは？", opts: [{ t: "白", s: "clean" }, { t: "紅茶", s: "luxury" }, { t: "珈琲", s: "power" }] },
+        { q: "今日の空のイメージは？", opts: [{ t: "雲ひとつない青", s: "clean" }, { t: "夕焼けの紫", s: "luxury" }, { t: "深い夜の紺", s: "power" }] },
+        { q: "惹かれる素材は？", opts: [{ t: "リネン", s: "clean" }, { t: "シルク", s: "luxury" }, { t: "レザー", s: "power" }] },
+        { q: "週末の過ごし方は？", opts: [{ t: "公園を散歩", s: "clean" }, { t: "ホテルでアフタヌーンティー", s: "luxury" }, { t: "美術館で独り", s: "power" }] },
+        { q: "好きな雨の音は？", opts: [{ t: "しとしと降る霧雨", s: "clean" }, { t: "激しい夕立", s: "power" }, { t: "軒下で聴く雨音", s: "luxury" }] },
+        { q: "今の鞄の中身は？", opts: [{ t: "最小限の荷物", s: "clean" }, { t: "お気に入りの小物が沢山", s: "luxury" }, { t: "仕事の道具がぎっしり", s: "power" }] },
+        { q: "どんな音楽を聴きたい？", opts: [{ t: "ピアノ独奏", s: "clean" }, { t: "ジャズ・ボーカル", s: "luxury" }, { t: "低音が響くビート", s: "power" }] },
+        { q: "惹かれる光は？", opts: [{ t: "木漏れ日", s: "clean" }, { t: "シャンデリア", s: "luxury" }, { t: "キャンドル", s: "power" }] },
+        { q: "理想の旅先は？", opts: [{ t: "北欧の村", s: "clean" }, { t: "パリの市街地", s: "luxury" }, { t: "モロッコの市場", s: "power" }] },
+        { q: "座るならどの席？", opts: [{ t: "窓際の明るい席", s: "clean" }, { t: "奥まったソファ席", s: "luxury" }, { t: "カウンターの端", s: "power" }] },
+        { q: "今の肌の感覚は？", opts: [{ t: "さらさら", s: "clean" }, { t: "しっとり", s: "luxury" }, { t: "ひんやり", s: "power" }] },
+        { q: "惹かれる言葉は？", opts: [{ t: "透明", s: "clean" }, { t: "優雅", s: "luxury" }, { t: "意志", s: "power" }] },
+        { q: "花を選ぶなら？", opts: [{ t: "カスミソウ", s: "clean" }, { t: "バラ", s: "luxury" }, { t: "カラー", s: "power" }] },
+        { q: "今の靴は？", opts: [{ t: "スニーカー", s: "clean" }, { t: "パンプス・革靴", s: "luxury" }, { t: "ブーツ", s: "power" }] },
+        { q: "香りに求めるものは？", opts: [{ t: "安心感", s: "clean" }, { t: "高揚感", s: "luxury" }, { t: "違和感", s: "power" }] }
+    ];
 
-    <script>
-        // 状態管理
-        let userTraits = { clean: 0, luxury: 0, power: 0 };
-        let questionIndex = 0;
+    let sessionQuestions = [];
+    let currentIdx = 0;
+    let scores = { clean: 0, luxury: 0, power: 0 };
 
-        // 設問データ（4問）
-        const questions = [
-            { text: "大切にしたい時間は？", options: [
-                { text: "朝の爽やかな空気の中での読書", trait: "clean" },
-                { text: "夜、お気に入りのバーやディナー", trait: "luxury" },
-                { text: "新しい場所への挑戦と刺激", trait: "power" }
-            ]},
-            { text: "あなたの理想のイメージは？", options: [
-                { text: "自然体で、透明感のある印象", trait: "clean" },
-                { text: "凛としていて、品格のある印象", trait: "luxury" },
-                { text: "個性的で、知性を感じる印象", trait: "power" }
-            ]},
-            { text: "惹かれる風景はどっち？", options: [
-                { text: "雨上がりの静かな森や水辺", trait: "clean" },
-                { text: "光が差し込むテラス席", trait: "luxury" },
-                { text: "重厚なインテリアが並ぶ書斎", trait: "power" }
-            ]},
-            { text: "今の直感で選ぶなら？", options: [
-                { text: "洗い立ての白いシャツ", trait: "clean" },
-                { text: "繊細なゴールドの耳飾り", trait: "luxury" },
-                { text: "使い込まれた革のノート", trait: "power" }
-            ]}
-        ];
+    window.onload = function() {
+        // プールから15問をランダムにシャッフルして抽出
+        sessionQuestions = questionPool.sort(() => Math.random() - 0.5).slice(0, 15);
+        render();
+    };
 
-        // 起動時に最初の質問を表示
-        window.onload = function() {
-            showQuestion();
+    function render() {
+        const container = document.getElementById('question-container');
+        if (currentIdx < sessionQuestions.length) {
+            const item = sessionQuestions[currentIdx];
+            container.innerHTML = `
+                <div class="progress">Question ${currentIdx + 1} / 15</div>
+                <h3>${item.q}</h3>
+                ${item.opts.map(o => `<button class="opt-btn" onclick="next('${o.s}')">${o.t}</button>`).join('')}
+            `;
+        } else {
+            showResult();
+        }
+    }
+
+    function next(trait) {
+        scores[trait]++;
+        currentIdx++;
+        render();
+    }
+
+    function showResult() {
+        let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        
+        // 分類ごとの香水リスト
+        const map = {
+            clean: ['nil', 'lazy', 'blanche', 'tacit', '212'],
+            luxury: ['english-pear', 'teabreak', 'parade', 'luna', 'lost-cherry'],
+            power: ['another13', 'gaiac10', 'imagination']
         };
 
-        function showQuestion() {
-            const container = document.getElementById('question-container');
-            if (questionIndex < questions.length) {
-                const q = questions[questionIndex];
-                let html = `<h3>${q.text}</h3>`;
-                q.options.forEach((opt) => {
-                    html += `<button class="opt-btn" onclick="answerQuestion('${opt.trait}')">${opt.text}</button>`;
-                });
-                container.innerHTML = html;
-            } else {
-                showResult();
-            }
-        }
+        const finalId = map[winner][Math.floor(Math.random() * map[winner].length)];
+        const perfume = masterPerfumes.find(p => p.id === finalId);
 
-        function answerQuestion(trait) {
-            userTraits[trait]++;
-            questionIndex++;
-            showQuestion();
-        }
-
-        function getRecommendedPerfumeId() {
-            // スコアが一番高いものを抽出
-            let topTrait = Object.keys(userTraits).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
-
-            // 13種類を3つの性格にランダム配分
-            const candidates = {
-                clean: ['nil', 'lazy', 'blanche', 'tacit', '212'],
-                luxury: ['english-pear', 'teabreak', 'parade', 'luna', 'lost-cherry'],
-                power: ['another13', 'gaiac10', 'imagination']
-            };
-
-            const list = candidates[topTrait];
-            return list[Math.floor(Math.random() * list.length)];
-        }
-
-        function showResult() {
-            const perfumeId = getRecommendedPerfumeId();
-            // data.js内の masterPerfumes から該当IDを探す
-            const perfume = masterPerfumes.find(p => p.id === perfumeId);
-            const container = document.getElementById('question-container');
-
-            if (perfume) {
-                container.innerHTML = `
-                    <div class="result-card">
-                        <p style="font-size:0.8rem; letter-spacing:0.1em; color:#8e8e8e;">YOUR MATCH</p>
-                        <h2 style="margin:10px 0;">${perfume.name}</h2>
-                        <img src="${perfume.img}" alt="${perfume.name}">
-                        <p class="quote">"${perfume.quote}"</p>
-                        <div style="margin-top:20px;">
-                            <a href="${perfume.review_url}" class="detail-btn">詳しく見る</a>
-                            <button class="retry-btn" onclick="location.reload()">もう一度診断</button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `<p>結果の取得に失敗しました。もう一度お試しください。</p>
-                                       <button class="retry-btn" onclick="location.reload()">戻る</button>`;
-            }
-        }
-    </script>
+        document.getElementById('question-container').innerHTML = `
+            <div class="result-card">
+                <h2>Recommendation</h2>
+                <img src="${perfume.img}">
+                <h3>${perfume.name}</h3>
+                <p>"${perfume.quote}"</p>
+                <a href="${perfume.review_url}" class="detail-btn">詳細・分析データを読む</a>
+                <button class="retry-btn" onclick="location.reload()">別の質問で再診断する</button>
+            </div>
+        `;
+    }
+</script>
 </body>
 </html>
