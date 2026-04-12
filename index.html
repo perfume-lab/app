@@ -122,6 +122,8 @@
       aspect-ratio: 1 / 1;
       display: block;
       border: none;
+      object-fit: cover;
+      background: #f2f2f2;
     }
 
     .mood-body {
@@ -393,9 +395,24 @@
       {
         q: "休日の朝、近いのは？",
         opts: [
-          { t: "白くて軽い朝", sub: "自然光・清潔感・風", color: "linear-gradient(135deg, #f7f7f2 0%, #dfeee8 100%)", s: { clean: 1.0, b: 0.8, s: 0.5 } },
-          { t: "深く静かな朝", sub: "カーテン・静寂・余白", color: "linear-gradient(135deg, #5f6672 0%, #2f3440 100%)", s: { power: 1.0, s: 0.3, d: 0.2 } },
-          { t: "上質で特別な朝", sub: "ホテル・柔らかい光・余裕", color: "linear-gradient(135deg, #eadfce 0%, #cbb79d 100%)", s: { luxury: 1.0, s: 0.8, f: 0.6 } }
+          {
+            t: "白くて軽い朝",
+            sub: "自然光・清潔感・風",
+            img: "images/questions/q1_clean.png",
+            s: { clean: 1.0, b: 0.8, s: 0.5 }
+          },
+          {
+            t: "深く静かな朝",
+            sub: "カーテン・静寂・余白",
+            img: "images/questions/q1_power.png",
+            s: { power: 1.0, s: 0.3, d: 0.2 }
+          },
+          {
+            t: "上質で特別な朝",
+            sub: "ホテル・柔らかい光・余裕",
+            img: "images/questions/q1_luxury.png",
+            s: { luxury: 1.0, s: 0.8, f: 0.6 }
+          }
         ]
       },
       {
@@ -547,6 +564,10 @@
     }
 
     function renderMoodVisual(opt) {
+      const img = safeText(opt.img, "");
+      if (img) {
+        return `<img class="mood-visual" src="${img}" alt="${safeText(opt.t, "")}" onerror="this.style.display='none'">`;
+      }
       const color = safeText(opt.color, "linear-gradient(135deg, #eeeeee 0%, #cccccc 100%)");
       return `<div class="mood-visual" style="background:${color};"></div>`;
     }
